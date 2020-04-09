@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.minbao.wwm.dao.mapper">
+
+
+	<select id="getExtType" parameterType="Map" resultType="Map">
+		SELECT DISTINCT EXT_TYPE,MAX(SORT) AS MAX_SORT FROM t_loreal_product_ext WHERE PM_ID=#{pmId}
+	</select>
+
+	<select id="getExtTypeFromMain" parameterType="Map" resultType="Map">
+		SELECT EXT_TYPE as extType FROM t_loreal_product_main WHERE PM_ID=#{pmId};
+	</select>
+
+</mapper>

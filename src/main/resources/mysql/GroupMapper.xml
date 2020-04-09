@@ -1,0 +1,529 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oreal.dao.mysql.mapper">
+	<!--新增产品分类-->
+	<insert id="insertByCateGoryRel">
+		INSERT INTO
+		t_product_category_rel(category_id,product_id,CREATE_TIME,SORT)
+		VALUES(#{categoryId},#{productId},SYSDATE(),#{sort})
+	</insert>
+
+	<!--新增产品资源-->
+	<insert id="addResource">
+		INSERT INTO t_loreal_resources ( PRODUCT_ID, RESOURCE_TYPE, FILE_TYPE, FILE_URL, SORT )
+        VALUES
+        ( #{productId}, #{resourceType}, #{fileType}, #{fileUrl}, #{sort} )
+	</insert>
+
+	<update id="updateAllMain">
+		update t_loreal_product set PM_ID=#{pmId}
+		where product_id in
+		<foreach collection="products" index="index"  item="item"  open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+
+	<update id="updateAllMainByProducts">
+		update t_loreal_product set PM_ID=#{pmId}
+		where product_id in
+		<foreach collection="productids" index="index"  item="item"  open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+
+	<update id="updatePmid">
+		update t_loreal_product set PM_ID=NULL
+		where product_id = #{productId} and pm_id=#{pmId}
+	</update>
+
+	<delete id="updateExtAndPmid">
+		delete FROM t_loreal_product_ext
+		WHERE product_id = #{productId} and pm_id=#{pmId}
+	</delete>
+
+	<delete id="deleteByCateGoryRel">
+		delete from t_product_category_rel
+		WHERE product_id = #{productId}
+	</delete>
+
+	<!--根据产品删除资源-->
+	<delete id="deleteResourceById">
+		delete from t_loreal_resources
+		WHERE product_id = #{productId} and resource_type = #{resourceType}
+	</delete>
+
+
+	<!--<update id="updateExtAndPmid">-->
+	<!--update t_loreal_product_ext set PM_ID = NULL-->
+	<!--where product_id = #{productId} and PM_ID = #{pmId}-->
+	<!--</update>-->
+
+	<update id="updatePMID">
+		update t_loreal_product_ext
+		set PM_ID = #{pmId}
+		where product_id IN
+		<foreach collection="productIds" item="item" index="index" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+
+	</update>
+
+	<select id="getExtType" parameterType="Map" resultType="Map">
+		SELECT DISTINCT EXT_TYPE,MAX(SORT) AS MAX_SORT FROM t_loreal_product_ext WHERE PM_ID=#{pmId}
+	</select>
+
+	<select id="getExtTypeFromMain" parameterType="Map" resultType="Map">
+		SELECT EXT_TYPE as extType FROM t_loreal_product_main WHERE PM_ID=#{pmId};
+	</select>
+
+	<select id="getProductInfoForExt" parameterType="Map" resultType="Map">
+		SELECT UNIT,COLOUR_SCHEME,COLOUR_NUMBER,COLOUR_DESCRIPTION,COLOUR_VALUE,EYE_SHADOW_IMG,FGCODE FROM T_LOREAL_PRODUCT WHERE PRODUCT_ID=#{productId}
+	</select>
+
+	<insert id="addProductExt" parameterType="Map">
+		INSERT INTO t_loreal_product_ext(PM_ID,PRODUCT_ID,EXT_TYPE,EXT_VALUE,SCHEME,MODEL,DESCRIPTION,SORT,CREATE_TIME) VALUES (#{pmId},#{productId},#{extType},#{extValue},#{scheme},#{model},#{description},(select case  when max(r.SORT) IS NULL then '1' else max(r.SORT)+1 end from t_loreal_product_ext r WHERE r.PM_ID =#{pmId}),SYSDATE())
+	</insert>
+
+	<!--<update id="updatePMID">-->
+	<!--update t_loreal_product_ext ext-->
+	<!--<set>-->
+	<!--&lt;!&ndash;<if test="sort != null and sort != ''">&ndash;&gt;-->
+	<!--&lt;!&ndash;,sort = #{sort}&ndash;&gt;-->
+	<!--&lt;!&ndash;</if>&ndash;&gt;-->
+	<!--<if test="pmId != null and pmId != ''">-->
+	<!--,PM_ID = #{pmId}-->
+	<!--</if>-->
+	<!--</set>-->
+	<!--<where>-->
+	<!--&lt;!&ndash;<if test="productId != null and productId != ''">&ndash;&gt;-->
+	<!--&lt;!&ndash;and  ext.product_id = #{productId}&ndash;&gt;-->
+	<!--&lt;!&ndash;</if>&ndash;&gt;-->
+	<!--<if test="productIds != null and productIds != ''">-->
+	<!--and  ext.product_id in (#{productIds})-->
+	<!--&lt;!&ndash;<foreach collection="productIds" index="index"  item="item"  open="(" separator="," close=")">&ndash;&gt;-->
+	<!--&lt;!&ndash;#{item}&ndash;&gt;-->
+	<!--&lt;!&ndash;</foreach>&ndash;&gt;-->
+	<!--</if>-->
+	<!--<if test="pmId != null and pmId != ''">-->
+	<!--and PM_ID = #{pmId}-->
+	<!--</if>-->
+	<!--</where>-->
+	<!--</update>-->
+
+	<update id="updateSortByProduct">
+	    update t_loreal_product_ext ext set sort = #{sort}
+		where ext.product_id = #{productId}
+		and PM_ID = #{pmid}
+	</update>
+	<update id="updateAllMessage" parameterType="map">
+		UPDATE t_loreal_product
+		<set>
+			<if test="fgCode != NULL and fgCode!=''">
+				FGCODE = #{fgCode},
+			</if>
+			<if test="chineseName != NULL and chineseName!=''">
+				CHINESE_NAME = #{chineseName},
+			</if>
+			<if test="productImg != NULL and productImg!=''">
+				PRODUCT_IMG = #{productImg},
+			</if>
+			<if test="englishName != NULL and englishName!=''">
+				ENGLISH_NAME = #{englishName},
+			</if>
+
+			<if test="sellingPoints != NULL and sellingPoints!=''">
+				SELLING_POINTS = #{sellingPoints},
+			</if>
+
+			<if test="description != NULL and description!=''">
+				DESCRIPTION = #{description},
+			</if>
+			<if test="specification != NULL and specification!=''">
+				SPECIFICATION = #{specification},
+			</if>
+			<if test="unit != NULL and unit!=''">
+				UNIT = #{unit},
+			</if>
+			<if test="rspPrice != NULL and rspPrice!=''">
+				RSP_PRICE = #{rspPrice},
+			</if>
+			<if test="newPric != NULL and newPric!=''">
+				NEW_PRIC =#{newPric},
+			</if>
+			START_TIME = #{startTime},
+			END_TIME = #{endTime},
+			<if test="colourScheme != NULL and colourScheme!=''">
+				COLOUR_SCHEME =#{colourScheme},
+			</if>
+			<if test="colourNumber != NULL and colourNumber!=''">
+				COLOUR_NUMBER = #{colourNumber},
+			</if>
+			<if test="colourDescription != NULL and colourDescription!=''">
+				COLOUR_DESCRIPTION = #{colourDescription},
+			</if>
+			<if test="colourValue != NULL and colourValue!=''">
+				COLOUR_VALUE =#{colourValue},
+			</if>
+			<if test="barcode != NULL and barcode!=''">
+				BARCODE = #{barcode},
+			</if>
+			<if test="productAddr != NULL and productAddr!=''">
+				PRODUCT_ADDR =#{productAddr},
+			</if>
+			<if test="showType != NULL and showType!=''">
+				SHOW_TYPE = #{showType},
+			</if>
+			<if test="showDetail != NULL and showDetail!=''">
+				SHOW_DETAIL = #{showDetail},
+			</if>
+			<if test="status != NULL and status!=''">
+				STATUS =#{status},
+			</if>
+			<if test="createTime != NULL and createTime!=''">
+				CREATE_TIME =#{createTime},
+			</if>
+			<if test="updateTime != NULL and updateTime!=''">
+				UPDATE_TIME = #{updateTime},
+			</if>
+			<if test="brandId != NULL and brandId!=''">
+				BRAND_ID = #{brandId},
+			</if>
+			<if test="pmId != NULL and pmId!=''">
+				PM_ID =#{pmId},
+			</if>
+			<if test="productDetailUrl != NULL and productDetailUrl!=''">
+				PRODUCT_DETAIL_URL = #{productDetailUrl},
+			</if>
+			<if test="productType != NULL and productType!=''">
+				PRODUCT_TYPE =#{productType},
+			</if>
+			<if test="nickName != NULL and nickName!=''">
+				NICK_NAME = #{nickName},
+			</if>
+			<if test="eyeShadowImg != NULL">
+				EYE_SHADOW_IMG = #{eyeShadowImg},
+			</if>
+			<if test="specificationUnit != null and specificationUnit != ''">
+				SPECIFICATION_UNIT = #{specificationUnit},
+			</if>
+			<if test="texture != null and texture != ''">
+				TEXTURE = #{texture},
+			</if>
+			<if test="specificationSelection != null and specificationSelection != ''">
+				SPECIFICATION_UNIT_TYPE = #{specificationSelection},
+			</if>
+		</set>
+		WHERE PRODUCT_ID = #{productId}
+
+
+	</update>
+	<update id="updateAllMessageByCateGory">
+
+		UPDATE t_loreal_product_category
+		SET
+		CATEGORY_NAME = #{CATEGORY_NAME},
+		CATEGORY_TYPE = #{CATEGORY_TYPE},
+		PID = #{PID},
+		DESCRIPTION = #{DESCRIPTION},
+		SORT = #{SORT},
+		CREATE_TIME = #{CREATE_TIME},
+		BRAND_ID =#{BRAND_ID}
+		WHERE CATEGORY_ID =#{CATEGORY_ID}
+
+	</update>
+	<update id="updateResource">
+		update t_loreal_resources
+		<set>
+			<if test="resourceType != null and resourceType != ''">
+				resource_type = #{resourceType},
+			</if>
+			<if test="fileType != null and fileType != ''">
+				file_type = #{fileType},
+			</if>
+			<if test="fileUrl != null and fileUrl != ''">
+				file_url = #{fileUrl},
+			</if>
+			<if test="sort != null and sort != ''">
+				sort = #{sort}
+			</if>
+		</set>
+		WHERE product_id = #{productId}
+
+	</update>
+
+	<!--产品分类排序-->
+	<update id="updateProductCateGorySort">
+		update t_product_category_rel set sort = #{sortobject}
+		where category_id = #{categoryId} and PRODUCT_ID = #{productIdobject}
+	</update>
+
+	<select id="selectAll" resultType="map" parameterType="map">
+		select * from t_loreal_product_category
+	</select>
+
+	<select id="selectAllMains" resultType="map" parameterType="map">
+		select PRODUCT_NAME,PM_ID,brand_id,IFNULL(EXT_TYPE,"") as "extType"
+		from t_loreal_product_main
+		where brand_id = #{brandId}
+	</select>
+
+	<select id="selectAllMessageByMain" resultType="java.lang.Integer">
+		select pro.PRODUCT_ID
+		from t_loreal_product pro
+		LEFT JOIN t_loreal_product_ext ext on pro.PRODUCT_ID=ext.PRODUCT_ID
+		where ext.pm_id in
+		<foreach collection="oldpmIds" item="item" index="index" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+
+	<select id="selectParmaryByCateGory" resultType="int">
+		select count(*) from (
+		select tpcl.category_id,count(tpcl.product_id) as num
+		from t_product_category_rel tpcl
+		where tpcl.category_id not in(select pid from t_loreal_product_category)
+		and tpcl.product_id in
+		<foreach collection="products" item="item" index="index" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		group by category_id having (num - #{num}) = 0
+		) a
+	</select>
+
+	<select id="selectAllMessageByNewPMID" resultType="java.lang.Integer">
+		select pro.PRODUCT_ID from t_loreal_product pro , t_loreal_product_ext ext
+		where pro.pm_id=ext.pm_id and ext.PM_ID = #{newpmId}
+		GROUP BY pro.PRODUCT_ID
+	</select>
+
+	<select id="selectAllMessageByOldPMID" resultType="java.lang.Integer">
+		select pro.PRODUCT_ID from t_loreal_product pro , t_loreal_product_ext ext
+		where pro.pm_id=ext.pm_id and ext.PM_ID in
+		<foreach collection="oldpmIdList" item="item" index="index" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		GROUP BY pro.PRODUCT_ID
+	</select>
+	<select id="selectAllMessageByExtType" resultType="object">
+		select PRODUCT_ID from t_loreal_product_ext
+		where EXT_TYPE=#{extType}
+		and PRODUCT_ID in
+		<foreach collection="array" item="item" index="index" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	<select id="getMaxSortForCateGory" resultType="_int">
+		select max(sort) from t_product_category_rel where CATEGORY_ID=#{categoryId}
+	</select>
+
+	<select id="selectResourceByProductId" resultType="map">
+		SELECT
+		FILE_TYPE as fileType,
+		RESOURCE_TYPE as resourceType,
+		FILE_URL as fileUrl,
+		FILE_URL as imgUrl,
+		SORT as sort
+		from t_loreal_resources res
+		where PRODUCT_ID=#{productId} and RESOURCE_TYPE=#{resourceType}
+		ORDER BY SORT ASC
+	</select>
+	<resultMap id="categoryInfo" type="Map">
+		<result column="CATEGORY_ID" property="categoryId" javaType="Integer" />
+		<result column="PID" property="pId" javaType="Integer" />
+		<result column="PRODUCT_ID" property="productId" javaType="Integer" />
+	</resultMap>
+	<select id="selectCategory" resultMap="categoryInfo">
+		SELECT
+			B.CATEGORY_ID,
+			CONCAT( "1-", B.CATEGORY_ID ) AS categoryIdStr,
+			B.PID,
+			A.PRODUCT_ID
+		FROM
+			t_product_category_rel A
+			INNER JOIN t_loreal_product_category B ON B.CATEGORY_ID = A.CATEGORY_ID
+		WHERE
+			A.PRODUCT_ID = #{productId}
+	</select>
+
+	<select id="selectMessageByProductId" resultType="map">
+		select
+		A.PRODUCT_ID as productId,
+		A.FGCODE as "fgCode",
+		A.PRODUCT_IMG as productImg,
+		A.CHINESE_NAME as "chineseName",
+		A.ENGLISH_NAME as englishName,
+		A.SELLING_POINTS as "sellingPoints",
+		A.DESCRIPTION as "description",
+-- 		capacity as "capacity",
+		A.UNIT as "unit",
+		A.RSP_PRICE as "rspPrice",
+		A.NEW_PRIC as "newPrice",
+		A.START_TIME as "startTime",
+		A.END_TIME as "endTime",
+		A.COLOUR_SCHEME as "colourScheme",
+		A.COLOUR_NUMBER as "colourNumber",
+		A.COLOUR_DESCRIPTION as "colourDescription",
+		A.COLOUR_VALUE as "colourValue",
+		A.BARCODE as "barcode",
+		A.PRODUCT_ADDR as "productAddr",
+		A.SHOW_TYPE as "showType",
+		A.SHOW_DETAIL as "showDetail",
+		A.STATUS as "status",
+		A.PRODUCT_TYPE as "productType",
+		A.NICK_NAME as "nickName",
+		A.EYE_SHADOW_IMG as "eyeShadowImg",
+		A.SPECIFICATION_UNIT as specificationUnit,
+		A.TEXTURE as texture,
+		A.SPECIFICATION_UNIT_TYPE AS specificationUnitType,
+-- 		"specificationSelection": 3,//商品规格类型1：色值2：毫升等3：图片
+-- 		"specificationImg": "yanying.jpg",//商品规格类型为3时，传
+		IFNULL(B.PM_ID,"") as "pmId",
+		IFNULL(B.EXT_TYPE,"") AS specificationSelection
+		from t_loreal_product A
+		LEFT JOIN t_loreal_product_ext B ON B.PRODUCT_ID = A.PRODUCT_ID
+		where A.PRODUCT_ID=#{productId}
+	</select>
+
+	<!--分组下拉框的产品信息-->
+	<select id="selectAllMessageByPMID" resultType="map">
+		select pro.product_id,chinese_name,product_name,COLOUR_SCHEME,NICK_NAME,IFNULL(ext.EXT_TYPE,"") AS EXT_TYPE,IFNULL(ext.EXT_VALUE,"") AS EXT_VALUE,IFNULL(ext.MODEL,"") AS MODEL,IFNULL(ext.SCHEME,"") AS SCHEME,IFNULL(ext.DESCRIPTION,"") AS DESCRIPTION,ext.sort
+		from t_loreal_product_ext  ext
+		LEFT JOIN t_loreal_product_main main on main.PM_ID=ext.PM_ID
+		left join t_loreal_product pro on pro.PRODUCT_ID=ext.PRODUCT_ID
+		where 1=1
+		and main.PM_ID=#{pmId}
+		ORDER BY ext.sort
+	</select>
+
+	<!--<select id="getResourceByProductIdCount" resultType="_int">-->
+	<!--SELECT-->
+	<!--FILE_TYPE as fileType,-->
+	<!--RESOURCE_TYPE as resourceType,-->
+	<!--FILE_URL as fileUrl,-->
+	<!--SORT as sort-->
+	<!--from t_loreal_resources res-->
+	<!--where PRODUCT_ID=#{productId}-->
+	<!--</select>-->
+
+	<!--<select id="getExtByProductCount" resultType="_int">-->
+
+	<!--</select>-->
+
+	<!-- 查询商品是否有资源 -->
+	<select id="getResourceByProductIdCount" parameterType="Map" resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM t_loreal_resources WHERE PRODUCT_ID = #{productId} AND RESOURCE_TYPE = 1
+	</select>
+	<!-- 删除商品资源 -->
+	<delete id="deleteResourceByProductId" parameterType="Map">
+		delete from t_loreal_resources
+		WHERE product_id = #{productId} AND RESOURCE_TYPE = 1
+	</delete>
+
+	<!-- 查询商品是否有分组 -->
+	<select id="getExtByProductCount" parameterType="Map" resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM t_loreal_product_ext WHERE PRODUCT_ID = #{productId}
+	</select>
+
+	<!--查询排序的组信息-->
+	<select id="selectCategoryMessage" resultType="map">
+		select count(pro.product_id) as num,main.product_name,pro.FGCODE as fgCode,sort
+		from t_loreal_product_main main
+		LEFT JOIN t_loreal_product pro on main.pm_id=pro.pm_id
+ 		LEFT JOIN t_loreal_product_ext ext on ext.product_id=pro.product_id
+ 		WHERE main.BRAND_ID = #{brandId}
+		GROUP BY main.product_name
+		ORDER BY sort
+	</select>
+
+	<!--查询赠品-->
+	<!--服务搜索-->
+	<select id="selectProductByTypeTwo" resultType="map">
+		SELECT FGCODE,CHINESE_NAME from(
+		SELECT FGCODE,CHINESE_NAME FROM t_loreal_product
+		where PRODUCT_TYPE=#{type} )a
+		WHERE CHINESE_NAME LIKE  concat  ('%',#{key},'%')
+	</select>
+
+	<!--产品(分类)排序查询-->
+	<select id="selectProductCateGorySort" resultType="map">
+		SELECT chinese_name as chineseName,NICK_NAME as nickName,FGCODE as fgCode,e.PRODUCT_ID as productId,r.sort
+		from
+		t_loreal_product p,t_loreal_product_ext e,t_product_category_rel r
+		where p.product_id=e.product_id
+		and p.product_id=r.PRODUCT_ID
+		and CATEGORY_ID = #{categoryId}
+		ORDER BY r.sort
+	</select>
+
+	<!-- 删除商品分组 -->
+	<delete id="deleteExtByProduct" parameterType="Map">
+		delete from t_loreal_product_ext
+		WHERE product_id = #{productId}
+	</delete>
+
+	<!-- 删除商品信息 -->
+	<delete id="deleteMessageByProduct" parameterType="Map">
+		DELETE from t_loreal_product
+		WHERE product_id = #{productId}
+	</delete>
+
+	<select id="getNewAndHot" parameterType="Map" resultType="Integer">
+		SELECT DISTINCT A.BEST_TYPE AS bestType FROM t_loreal_best A WHERE <![CDATA[BEST_TYPE<=2 ]]> AND PRODUCT_ID=#{productId}
+	</select>
+
+	<delete id="deleteNewAndHot" parameterType="Map">
+		DELETE FROM t_loreal_best WHERE PRODUCT_ID=#{productId}
+	</delete>
+
+	<select id="getMaxSortNewAndHot" parameterType="Map" resultType="java.lang.Integer">
+        SELECT MAX(SORT) FROM t_loreal_best WHERE BEST_TYPE = #{categoryId}
+    </select>
+
+	<delete id="addNewAndHot" parameterType="Map">
+		INSERT INTO t_loreal_best(PRODUCT_ID,BEST_TYPE,SORT,CREATE_TIME) VALUES (#{productId},#{categoryType},#{maxSort},SYSDATE())
+	</delete>
+
+	<insert id="addProductExtInfo" parameterType="Map">
+		INSERT INTO t_loreal_product_main(PRODUCT_NAME,BRAND_ID,CREATE_TIME,EXT_TYPE) VALUES (#{groupName},#{brandId},SYSDATE(),#{extType})
+		<selectKey resultType="int" keyProperty="pmId" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<select id="getExtId" parameterType="Map" resultType="Integer">
+		SELECT PM_ID FROM t_loreal_product_main WHERE PRODUCT_NAME = #{groupName} AND BRAND_ID = #{brandId}
+	</select>
+
+	<select id="checkProductIsIn" resultType="Integer" parameterType="Map">
+		SELECT ID FROM t_loreal_product_ext WHERE product_id = #{productId} AND PM_ID = #{pmId}
+	</select>
+	<update id="updateProductPMID" parameterType="Map">
+		update t_loreal_product
+		set PM_ID = #{pmId}
+		where product_id = #{productId}
+	</update>
+	<update id="updateProductExtPmId" parameterType="Map">
+		update t_loreal_product
+		set PM_ID = #{newPmId}
+		where PM_ID = #{oldPmId}
+	</update>
+	<update id="updateProductPmId"  parameterType="Map">
+		UPDATE t_loreal_product_ext SET PM_ID = #{newPmId} WHERE PM_ID = #{oldPmId}
+	</update>
+
+	<update id="updateExt">
+		update t_loreal_product_ext
+		<set>
+			<if test="eyeShadowImg != null and eyeShadowImg != ''">
+				EXT_VALUE = #{eyeShadowImg},DESCRIPTION = #{colourDescription}
+			</if>
+			<if test="colourValue != null and colourValue != ''">
+				EXT_VALUE = #{colourValue},MODEL = #{model},DESCRIPTION = #{description}
+			</if>
+			<if test="capacity != null and capacity != ''">
+				EXT_VALUE = #{capacity}
+			</if>
+		</set>
+			WHERE EXT_TYPE = #{extType} and PM_ID = #{pmId} and  PRODUCT_ID = #{productId}
+	</update>
+</mapper>

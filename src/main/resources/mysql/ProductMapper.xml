@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.minbao.wwm.dao.mapper.ProductMapper">
+
+	<!--新增产品-->
+	<insert id="addProduct" parameterType="Map">
+		INSERT m_product(product_name,product_image,product_status,product_show,expiration_date,saving_mode,description,create_date,update_date,new_price,price,start_time,end_time)
+ 		VALUES(#{productName},#{productImage},1,1,#{expirationDate},#{savingMode},#{description},SYSDATE(),SYSDATE(),#{newPrice},#{price},#{startTime},#{endTime});
+	</insert>
+</mapper>

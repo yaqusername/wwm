@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.minbao.wwm.dao.mapper.MainMapper">
+
+	<!-- 查询展示设置 -->
+	<select id="showSetting" resultType="map">
+		select id,banner,channel,index_banner_img,notice from m_show_settings;
+	</select>
+
+</mapper>
