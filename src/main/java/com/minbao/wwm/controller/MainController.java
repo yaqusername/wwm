@@ -1,6 +1,8 @@
 package com.minbao.wwm.controller;
 
 import com.minbao.wwm.dto.ResponseJson;
+import com.minbao.wwm.service.BannerService;
+import com.minbao.wwm.service.CategoryService;
 import com.minbao.wwm.service.MainService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +23,12 @@ public class MainController {
 
     @Autowired
     MainService mainService;
+
+    @Autowired
+    CategoryService categoryService;
+
+    @Autowired
+    BannerService bannerService;
 
     /**
      * 获取前端展示设置
@@ -43,9 +51,25 @@ public class MainController {
      * @return
      */
     @RequestMapping("/indexInfo")
-    public ResponseJson appInfo(){
+    public Map<String,Object> appInfo(){
 
-
-        return new ResponseJson();
+        Map<String,Object> result = new HashMap<>();
+        Map<String,Object> data = new HashMap<>();
+        try {
+            List<Map<String,Object>> channel = categoryService.getCategory();
+            List<Map<String,Object>> categoryList = categoryService.getCategoryList();
+            List<Map<String,Object>> notice = mainService.getNotice();
+            List<Map<String,Object>> banner = bannerService.getBanner();
+            data.put("channel",channel);
+            data.put("categoryList",categoryList);
+            data.put("banner",banner);
+            data.put("notice",notice);
+            result.put("errno",0);
+            result.put("errmsg","");
+            result.put("data",data);
+        }catch (Exception e){
+            logger.error(e.getMessage());
+        }
+        return result;
     }
 }

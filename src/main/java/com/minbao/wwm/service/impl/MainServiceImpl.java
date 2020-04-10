@@ -22,4 +22,9 @@ public class MainServiceImpl implements MainService {
     public Map<String, Object> showSettings() {
         return mainMapper.showSetting();
     }
+
+    @Override
+    public List<Map<String, Object>> getNotice() {
+        return mainMapper.getNotice();
+    }
 }

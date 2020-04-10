@@ -6,9 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 @Qualifier("mysqlSessionFactory")
-public interface MainMapper {
+public interface BannerMapper {
 
-    Map<String,Object> showSetting();
-
-    List<Map<String,Object>> getNotice();
+    List<Map<String,Object>> getBanner();
 }

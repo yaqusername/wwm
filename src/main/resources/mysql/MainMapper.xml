@@ -6,5 +6,10 @@
 	<select id="showSetting" resultType="map">
 		select id,banner,channel,index_banner_img,notice from m_show_settings;
 	</select>
+	
+	<!-- 获取通知 -->
+	<select id="getNotice" resultType="map">
+		SELECT * FROM m_notice;
+	</select>
 
 </mapper>
