@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,10 +57,39 @@ public class MainController {
         Map<String,Object> result = new HashMap<>();
         Map<String,Object> data = new HashMap<>();
         try {
-            List<Map<String,Object>> channel = categoryService.getCategory();
+            List<Map<String,Object>> channel = new ArrayList<>();
             List<Map<String,Object>> categoryList = categoryService.getCategoryList();
             List<Map<String,Object>> notice = mainService.getNotice();
             List<Map<String,Object>> banner = bannerService.getBanner();
+            List<Map<String,Object>> productList = mainService.getProduct();
+            for (Map map:categoryList) {
+                Map<String,Object> tempMap = new HashMap<>();
+                tempMap.put("icon_url",map.get("icon_url"));
+                tempMap.put("is_category",map.get("is_category"));
+                tempMap.put("keywords",map.get("keywords"));
+                tempMap.put("level",map.get("level"));
+                tempMap.put("banner",map.get("banner"));
+                tempMap.put("front_name",map.get("front_name"));
+                tempMap.put("is_show",map.get("is_show"));
+                tempMap.put("front_desc",map.get("front_desc"));
+                tempMap.put("img_url",map.get("img_url"));
+                tempMap.put("name",map.get("name"));
+                tempMap.put("is_channel",map.get("is_channel"));
+                tempMap.put("show_index",map.get("show_index"));
+                tempMap.put("height",map.get("height"));
+                tempMap.put("id",map.get("id"));
+                tempMap.put("sort_order",map.get("sort_order"));
+                channel.add(tempMap);
+            }
+            for (Map m:categoryList) {
+                List<Map<String,Object>> goodsList = new ArrayList<>();
+                for (Map m1:productList) {
+                    if (m.get("id").toString().equals(m1.get("category_id").toString())){
+                        goodsList.add(m1);
+                    }
+                }
+                m.put("goodsList",goodsList);
+            }
             data.put("channel",channel);
             data.put("categoryList",categoryList);
             data.put("banner",banner);

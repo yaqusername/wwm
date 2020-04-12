@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -44,10 +45,82 @@ public class ProductController {
         }
     }
 
-    @RequestMapping("/test")
-    public String test(){
-        String s = productService.test();
-        logger.info("####################");
-        return s;
+    @ResponseBody
+    @RequestMapping("/count")
+    public Map<String,Object> count(){
+        Map<String,Object> result = new HashMap<>();
+        Map<String,Object> count = new HashMap<>();
+        Map<String,Object> reqMap = new HashMap<>();
+        reqMap.put("categoryId",0);
+        int pCount = 0;
+        int errno = 0;
+        String errmsg = "获取产品数量成功";
+        try {
+            Map<String,Object> ret = productService.count(reqMap);
+            pCount = Integer.valueOf(String.valueOf(ret.get("count")));
+            count.put("goodsCount",pCount);
+        }catch (Exception e){
+            errno = -1;
+            errmsg = "获取产品数量异常！";
+            count.put("goodsCount",null);
+            logger.error("获取产品数量异常！ msg：" + e.getMessage());
+        }
+        result.put("errno",errno);
+        result.put("errmsg",errmsg);
+        result.put("data",count);
+        logger.info("获取产品数量成功！msg：" + JSON.toJSONString(result));
+        return result;
+    }
+
+    @RequestMapping("/getProductByCategoryId")
+    @ResponseBody
+    public Map<String,Object> getProductByCategoryId(@RequestBody Map<String,Object> reqData){
+        Map<String,Object> data = new HashMap<>();
+        Map<String,Object> reqMap = new HashMap<>();
+        List<Map<String,Object>> ret = null;
+        int pageTotal = 0;
+        int errno = 0;
+        int count = 0;
+        String errmsg = "通过分类ID获取产品列表成功";
+        int currrentPage = 0;
+        int size = 0;
+        try {
+            currrentPage = Integer.valueOf(String.valueOf(reqData.get("page")));
+            size = Integer.valueOf(String.valueOf(reqData.get("size")));
+            int categoryId = Integer.valueOf(String.valueOf(reqData.get("id")));
+            int page = currrentPage - 1;
+            reqMap.put("size",size);
+            reqMap.put("currentPage",page);
+            reqMap.put("categoryId",categoryId);
+            Map<String,Object> countMap = productService.count(reqMap);
+            count = Integer.valueOf(String.valueOf(countMap.get("count")));
+            if (count%size == 0){
+                pageTotal = count/size;
+            }else {
+                pageTotal = count/size + 1;
+            }
+
+
+            ret = productService.getProductByCategoryId(reqMap);
+        }catch (Exception e){
+            errno = -1;
+            errmsg = "通过分类ID获取产品列表异常！";
+            logger.error("通过分类ID获取产品列表异常！ msg：" + e.getMessage());
+        }
+        data.put("count",count);
+        data.put("totalPages",pageTotal);
+        data.put("pageSize",size);
+        data.put("currentPage",currrentPage);
+        data.put("data",ret);
+        logger.info("通过分类ID获取产品列表成功！msg：" + JSON.toJSONString(getResult(errno,errmsg,data)));
+        return getResult(errno,errmsg,data);
+    }
+
+    private Map<String,Object> getResult(int errno,String errmsg,Map data){
+        Map<String,Object> result = new HashMap<>();
+        result.put("errno",errno);
+        result.put("errmsg",errmsg);
+        result.put("data",data);
+        return result;
     }
 }

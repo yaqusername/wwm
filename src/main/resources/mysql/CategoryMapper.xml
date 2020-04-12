@@ -9,12 +9,12 @@
 	</insert>
 
 	<!-- 获取分类 -->
-	<select id="getCategory" resultType="map">
-		SELECT * from m_category;
+	<select id="getCategoryList" resultType="map">
+		SELECT *,img_url as banner,p_height as height from m_category where is_show = 1 and is_category = 1 and is_channel = 1 ORDER BY show_index;
 	</select>
 
-	<!-- 获取分类 -->
-	<select id="getCategoryList" resultType="map">
-		SELECT * from m_category;
+	<!-- 获取当前分类 -->
+	<select id="currentCategory" resultType="map">
+		SELECT id,name,img_url,p_height from m_category where is_show = 1 and is_category = 1 and is_channel = 1 and id = #{categoryId};
 	</select>
 </mapper>

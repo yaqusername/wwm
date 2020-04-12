@@ -12,4 +12,9 @@
 		SELECT * FROM m_notice;
 	</select>
 
+	<!-- 获取首页展示产品列表 -->
+	<select id="getProduct" resultType="map">
+		SELECT * FROM m_goods where is_index = 1;
+	</select>
+
 </mapper>

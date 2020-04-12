@@ -27,4 +27,9 @@ public class MainServiceImpl implements MainService {
     public List<Map<String, Object>> getNotice() {
         return mainMapper.getNotice();
     }
+
+    @Override
+    public List<Map<String, Object>> getProduct() {
+        return mainMapper.getProduct();
+    }
 }

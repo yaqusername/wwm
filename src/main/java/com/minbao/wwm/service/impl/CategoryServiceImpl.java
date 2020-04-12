@@ -19,12 +19,12 @@ public class CategoryServiceImpl implements CategoryService {
     CategoryMapper categoryMapper;
 
     @Override
-    public List<Map<String, Object>> getCategory() {
-        return categoryMapper.getCategory();
+    public List<Map<String, Object>> getCategoryList() {
+        return categoryMapper.getCategoryList();
     }
 
     @Override
-    public List<Map<String, Object>> getCategoryList() {
-        return categoryMapper.getCategoryList();
+    public Map<String, Object> currentCategory(String categoryId) {
+        return categoryMapper.currentCategory(categoryId);
     }
 }

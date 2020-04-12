@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -64,5 +65,15 @@ public class ProductServiceImpl implements ProductService {
             logger.error("********addProduct 添加产品异常！ msg:" + e.getMessage());
             return new ResponseJson(ErrorCMD.ERROR,"产品添加异常！",new HashMap<>());
         }
+    }
+
+    @Override
+    public Map<String,Object> count(Map<String,Object> reqMap) {
+        return productMapper.count(reqMap);
+    }
+
+    @Override
+    public List<Map<String, Object>> getProductByCategoryId(Map<String,Object> reqMap) {
+        return productMapper.getProductByCategoryId(reqMap);
     }
 }

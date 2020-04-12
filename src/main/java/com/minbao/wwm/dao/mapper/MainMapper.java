@@ -11,4 +11,6 @@ public interface MainMapper {
     Map<String,Object> showSetting();
 
     List<Map<String,Object>> getNotice();
+
+    List<Map<String,Object>> getProduct();
 }

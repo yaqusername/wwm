@@ -10,6 +10,6 @@
 
 	<!-- 获取分类 -->
 	<select id="getBanner" resultType="map">
-		SELECT * from m_banner;
+		SELECT * from m_banner order by sort;
 	</select>
 </mapper>

@@ -5,7 +5,7 @@ import java.util.Map;
 
 public interface CategoryService {
 
-    List<Map<String,Object>> getCategory();
-
     List<Map<String,Object>> getCategoryList();
+
+    Map<String,Object> currentCategory(String categoryId);
 }

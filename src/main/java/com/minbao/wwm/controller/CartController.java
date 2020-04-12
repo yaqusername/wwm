@@ -26,9 +26,4 @@ public class CartController {
         result.put("data",data);
         return result;
     }
-
-    public static void main(String[] a){
-
-
-    }
 }

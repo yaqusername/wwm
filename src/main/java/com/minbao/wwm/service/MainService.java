@@ -8,4 +8,6 @@ public interface MainService {
     Map<String,Object> showSettings();
 
     List<Map<String,Object>> getNotice();
+
+    List<Map<String,Object>> getProduct();
 }

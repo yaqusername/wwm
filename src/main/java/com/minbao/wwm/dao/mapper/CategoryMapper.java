@@ -8,7 +8,7 @@ import java.util.Map;
 @Qualifier("mysqlSessionFactory")
 public interface CategoryMapper {
 
-    List<Map<String,Object>> getCategory();
-
     List<Map<String,Object>> getCategoryList();
+
+    Map<String,Object> currentCategory(String categoryId);
 }
