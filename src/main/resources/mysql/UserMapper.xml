@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.minbao.wwm.dao.mapper.UserMapper">
+
+	<!--新增用户-->
+	<insert id="insertUser" parameterType="Map">
+		INSERT m_user(uid,sessionkey,create_time,nickname,gender,avatar,country,province,city)
+ 		VALUES(#{openid},#{session_key},SYSDATE(),#{nickname},#{gender},#{avatarUrl},#{country},#{province},#{city});
+	</insert>
+
+	<!--查询用户-->
+	<select id="searchUser" resultType="map" parameterType="Map">
+		select count(id) as count,id from m_user where uid = #{openid} GROUP BY id;
+	</select>
+
+</mapper>

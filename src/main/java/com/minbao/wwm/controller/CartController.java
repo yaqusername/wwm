@@ -26,4 +26,14 @@ public class CartController {
         result.put("data",data);
         return result;
     }
+
+    public static void main(String[] a){
+        int i = 15;
+        int p = 14;
+        if (i%p == 0){
+            System.err.println(i/p);
+        }else {
+            System.err.println(i/p + 1);
+        }
+    }
 }
