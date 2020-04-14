@@ -3,6 +3,7 @@ package com.minbao.wwm.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.minbao.wwm.service.UserService;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,6 +81,32 @@ public class UserController {
         result.put("errno",errno);
         result.put("errmsg",errmsg);
         result.put("data",data);
+        return result;
+    }
+
+    @RequestMapping("/updateUser")
+    public Map<String,Object> updateUser(@RequestBody Map<String,Object> reqData) {
+        int errno = -1;
+        String errmsg = "用户更新失败！";
+        Map<String,Object> result = new HashMap<>();
+        if (StringUtils.isBlank(String.valueOf(reqData.get("id")))){
+            errmsg = "userId不能为空！";
+        }
+        if (StringUtils.isBlank(String.valueOf(reqData.get("name")))){
+            errmsg = "姓名不能为空！";
+        }
+        if (StringUtils.isBlank(String.valueOf(reqData.get("mobile")))){
+            errmsg = "姓名不能为空！";
+        }
+
+        try {
+            int ret = userService.updateUser(reqData);
+            errno = 0;
+        }catch (Exception e){
+            logger.error("用户更新异常！msg："+e.getMessage());
+        }
+        result.put("errno",errno);
+        result.put("errmsg",errmsg);
         return result;
     }
 }
