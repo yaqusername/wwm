@@ -39,6 +39,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Integer updateUser(Map<String, Object> map) {
+        return userMapper.updateUser(map);
+    }
+
+    @Override
     public Map<String, Object> searchUser(Map<String, Object> map) {
         return userMapper.searchUser(map);
     }

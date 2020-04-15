@@ -118,15 +118,15 @@ public class ProductController {
     }
 
     @RequestMapping(value = "/detail")
-    public Map<String,Object> detail(String productId){
-        if (StringUtils.isBlank(productId)){
+    public Map<String,Object> detail(String id){
+        if (StringUtils.isBlank(id)){
             Map<String,Object> err = new HashMap<>();
             err.put("errno",-1);
             err.put("errmsg","产品ID不能为空！");
             err.put("data","");
         }
-        logger.info("获取产品详情请求参数：productId："+ productId);
-        return productService.detail(productId);
+        logger.info("获取产品详情请求参数：productId："+ id);
+        return productService.detail(id);
     }
 
     private Map<String,Object> getResult(int errno,String errmsg,Map data){

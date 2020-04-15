@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,17 +47,20 @@ public class UserController {
             if (retObj.containsKey("openid")){
                 logger.info("微信授权登成功！msg："+ JSON.toJSONString(retObj));
                 openid = retObj.getString("openid");
+                userInfo.put("openid",openid);
+                userInfo.put("sessionkey",retObj.get("session_key"));
                 Map<String,Object> isMember = userService.searchUser(retObj);
-                if (Integer.valueOf(String.valueOf(isMember.get("count")))>0){
+                if (isMember != null){
                     is_new = 0;
                     id = Integer.valueOf(String.valueOf(isMember.get("id")));
                 }else {
-                    userService.insertUser(userInfo);
-                    logger.info("新用户授权成功！");
+                    int addUser = userService.insertUser(userInfo);
+                    if (addUser > 0){
+                        logger.info("新用户授权成功！");
+                        userInfo.put("id",userInfo.get("id"));
+                    }
                 }
-                userInfo.put("openid",retObj.get("openid"));
-                userInfo.put("sessionkey",retObj.get("session_key"));
-
+                userInfo.put("id",id);
                 errno = 0;
                 errmsg = "微信授权登成功";
                 avatarUrl = String.valueOf(userInfo.get("avatarUrl"));
@@ -68,7 +70,7 @@ public class UserController {
                 errmsg = String.valueOf(retObj.get("errmsg"));
             }
         }catch (Exception e){
-            logger.error("微信授权登录异常！"+e.getMessage());
+            logger.error("微信授权登录异常！"+e.getMessage(),e.getMessage());
         }
 
         Map<String,Object> result = new HashMap<>();
@@ -101,7 +103,10 @@ public class UserController {
 
         try {
             int ret = userService.updateUser(reqData);
-            errno = 0;
+            if (ret > 0){
+                errno = 0;
+                errmsg = "用户更新成功！";
+            }
         }catch (Exception e){
             logger.error("用户更新异常！msg："+e.getMessage());
         }

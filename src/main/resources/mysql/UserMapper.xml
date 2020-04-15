@@ -4,13 +4,21 @@
 
 	<!--新增用户-->
 	<insert id="insertUser" parameterType="Map">
+		<selectKey keyProperty="id" order="AFTER" resultType="Integer">
+			select LAST_INSERT_ID()
+		</selectKey>
 		INSERT m_user(uid,sessionkey,create_time,nickname,gender,avatar,country,province,city)
- 		VALUES(#{openid},#{session_key},SYSDATE(),#{nickname},#{gender},#{avatarUrl},#{country},#{province},#{city});
+ 		VALUES(#{openid},#{sessionkey},SYSDATE(),#{nickname},#{gender},#{avatarUrl},#{country},#{province},#{city});
 	</insert>
 
 	<!--查询用户-->
 	<select id="searchUser" resultType="map" parameterType="Map">
 		select count(id) as count,id from m_user where uid = #{openid} GROUP BY id;
 	</select>
+
+	<!-- 更新user -->
+	<update id="updateUser" parameterType="Map">
+		update m_user set name = #{name},mobile = #{mobile} where id = #{id};
+	</update>
 
 </mapper>
