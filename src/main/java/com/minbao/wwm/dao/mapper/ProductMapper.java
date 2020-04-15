@@ -13,4 +13,16 @@ public interface ProductMapper {
     Map<String,Object> count(Map<String,Object> reqMap);
 
     List<Map<String,Object>> getProductByCategoryId(Map<String,Object> reqMap);
+
+    //商品详情
+    Map<String,Object> productInfo(String productId);
+
+    //详情列表
+    List<Map<String,Object>> productList(String productId);
+
+    //商品规格
+    List<Map<String,Object>> specificationList(String productId);
+
+    //图片资源
+    List<Map<String,Object>> imageResouce(String productId);
 }

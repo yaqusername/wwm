@@ -13,5 +13,7 @@ public interface ProductService {
 
     Map<String,Object> count(Map<String,Object> reqMap);
 
+    Map<String,Object> detail(String productId);
+
     List<Map<String,Object>> getProductByCategoryId(Map<String,Object> reqMap);
 }

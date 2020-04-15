@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
     public String userLogin(String code) {
 
         String APPID = "wx7b6805ecb2838f04";
-        String SECRET = "3d9658c413b3001e3b6ba41659594fae";
+        String SECRET = "c41ef6ce54e1378034a4407bc07e3164";
         String url = "https://api.weixin.qq.com/sns/jscode2session?appid="+APPID+"&secret="+SECRET+"&js_code="+code+"&grant_type=authorization_code";
 
         return restTemplate.getForObject(url,String.class);

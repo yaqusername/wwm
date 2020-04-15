@@ -1,5 +1,6 @@
 package com.minbao.wwm.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.minbao.wwm.common.ErrorCMD;
 import com.minbao.wwm.dao.mapper.ProductMapper;
 import com.minbao.wwm.dto.ResponseJson;
@@ -8,11 +9,10 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -70,6 +70,39 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Map<String,Object> count(Map<String,Object> reqMap) {
         return productMapper.count(reqMap);
+    }
+
+    @Override
+    public Map<String, Object> detail(String productId) {
+        int errno = 1;
+        String errmsg = "获取产品详情失败！";
+        Map<String,Object> result = new HashMap<>();
+        Map<String,Object> data = new HashMap<>();
+        try {
+            Map<String,Object> specification = new HashMap<>();
+            Map<String,Object> info = productMapper.productInfo(productId);
+            List<Map<String,Object>> productList = productMapper.productList(productId);
+            List<Map<String,Object>> specificationList = productMapper.specificationList(productId);
+            List<Map<String,Object>> gallery = productMapper.imageResouce(productId);
+            data.put("info",info);
+            data.put("gallery",gallery);
+            data.put("productList",productList);
+            if (!CollectionUtils.isEmpty(specificationList)){
+                specification.put("specification_id",Integer.valueOf(String.valueOf(specificationList.get(0).get("specification_id"))));
+                specification.put("name","规格");
+                specification.put("valueList",specificationList);
+            }
+            data.put("specificationList",specification);
+            errmsg = "获取产品详情成功！";
+            errno = 0;
+        }catch (Exception e){
+            logger.error("获取产品详情异常！msg："+e.getMessage(),e);
+        }
+        result.put("errno",errno);
+        result.put("errmsg",errmsg);
+        result.put("data",data);
+        logger.info("获取产品详情返回结果："+ JSON.toJSONString(result));
+        return result;
     }
 
     @Override

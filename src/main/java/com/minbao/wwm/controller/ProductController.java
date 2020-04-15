@@ -5,6 +5,7 @@ import com.minbao.wwm.common.ErrorCMD;
 import com.minbao.wwm.dto.RequestJson;
 import com.minbao.wwm.dto.ResponseJson;
 import com.minbao.wwm.service.ProductService;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,6 +115,18 @@ public class ProductController {
         data.put("data",ret);
         logger.info("通过分类ID获取产品列表成功！msg：" + JSON.toJSONString(getResult(errno,errmsg,data)));
         return getResult(errno,errmsg,data);
+    }
+
+    @RequestMapping(value = "/detail")
+    public Map<String,Object> detail(String productId){
+        if (StringUtils.isBlank(productId)){
+            Map<String,Object> err = new HashMap<>();
+            err.put("errno",-1);
+            err.put("errmsg","产品ID不能为空！");
+            err.put("data","");
+        }
+        logger.info("获取产品详情请求参数：productId："+ productId);
+        return productService.detail(productId);
     }
 
     private Map<String,Object> getResult(int errno,String errmsg,Map data){
