@@ -2,6 +2,7 @@ package com.minbao.wwm.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.minbao.wwm.common.ReturnUtil;
 import com.minbao.wwm.service.UserService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +25,9 @@ public class UserController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    ReturnUtil returnUtil;
 
     @RequestMapping("/userLogin")
     public Map<String,Object> userLogin(@RequestBody Map<String,Object> reqData){
@@ -40,7 +46,6 @@ public class UserController {
             Object userInfoObj = reqData.get("userInfo");
             JSONObject jsonObject = JSONObject.parseObject(JSON.toJSONString(userInfoObj));
             userInfo = JSONObject.parseObject(String.valueOf(jsonObject.get("userInfo")));
-
 
             String ret = userService.userLogin(code);
             JSONObject retObj = JSONObject.parseObject(ret);
@@ -72,18 +77,13 @@ public class UserController {
         }catch (Exception e){
             logger.error("微信授权登录异常！"+e.getMessage(),e.getMessage());
         }
-
-        Map<String,Object> result = new HashMap<>();
         data.put("is_new",is_new);
         data.put("nickname",nickname);
         data.put("avatarUrl",avatarUrl);
         data.put("openid",openid);
         data.put("userInfo",userInfo);
         data.put("id",id);
-        result.put("errno",errno);
-        result.put("errmsg",errmsg);
-        result.put("data",data);
-        return result;
+        return returnUtil.returnResult(errno,errmsg,data);
     }
 
     @RequestMapping("/updateUser")
@@ -91,27 +91,27 @@ public class UserController {
         int errno = -1;
         String errmsg = "用户更新失败！";
         Map<String,Object> result = new HashMap<>();
-        if (StringUtils.isBlank(String.valueOf(reqData.get("id")))){
-            errmsg = "userId不能为空！";
+        if (reqData.get("id")== null || reqData.get("id") == ""){
+            return returnUtil.returnResult(errno,"userId不能为空!",new ArrayList());
         }
-        if (StringUtils.isBlank(String.valueOf(reqData.get("name")))){
-            errmsg = "姓名不能为空！";
+        if (StringUtils.isBlank((String) reqData.get("name"))){
+            return returnUtil.returnResult(errno,"姓名不能为空!",new ArrayList());
         }
-        if (StringUtils.isBlank(String.valueOf(reqData.get("mobile")))){
-            errmsg = "姓名不能为空！";
+        if (StringUtils.isBlank((String) reqData.get("mobile"))){
+            return returnUtil.returnResult(errno,"手机号不能为空!",new ArrayList());
         }
 
         try {
+            logger.info("更新用户请求参数："+ JSON.toJSONString(reqData));
             int ret = userService.updateUser(reqData);
             if (ret > 0){
                 errno = 0;
-                errmsg = "用户更新成功！";
+                errmsg = "更新用户信息成功！";
+                logger.info("更新用户条数："+ ret);
             }
         }catch (Exception e){
             logger.error("用户更新异常！msg："+e.getMessage());
         }
-        result.put("errno",errno);
-        result.put("errmsg",errmsg);
-        return result;
+        return returnUtil.returnResult(errno,errmsg,new ArrayList());
     }
 }

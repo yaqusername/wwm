@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.minbao.wwm.dao.mapper.AddressMapper">
+
+	<!-- 获取区域 -->
+	<select id="getRegion" parameterType="String" resultType="Map">
+		SELECT * from m_region where parent_id = #{parentId};
+	</select>
+
+	<!-- 获取地址 -->
+	<select id="getAddress" parameterType="Integer" resultType="Map">
+		SELECT a.*,r1.`name` as province_name,r2.`name` as city_name,r3.`name` as district_name from m_address a
+			LEFT JOIN m_region r1 ON r1.id = a.province_id
+			LEFT JOIN m_region r2 ON r2.id = a.city_id
+			LEFT JOIN m_region r3 ON r3.id = a.area_id
+		where a.user_id = #{userId};
+	</select>
+
+</mapper>
