@@ -114,4 +114,33 @@ public class UserController {
         }
         return returnUtil.returnResult(errno,errmsg,new ArrayList());
     }
+
+    @RequestMapping("/userDetail")
+    public Map<String,Object> userDetail(@RequestBody Map<String,Object> reqData) {
+        int errno = -1;
+        String errmsg = "用户更新失败！";
+        Map<String,Object> result = new HashMap<>();
+        if (reqData.get("id")== null || reqData.get("id") == ""){
+            return returnUtil.returnResult(errno,"userId不能为空!",new ArrayList());
+        }
+        if (StringUtils.isBlank((String) reqData.get("name"))){
+            return returnUtil.returnResult(errno,"姓名不能为空!",new ArrayList());
+        }
+        if (StringUtils.isBlank((String) reqData.get("mobile"))){
+            return returnUtil.returnResult(errno,"手机号不能为空!",new ArrayList());
+        }
+
+        try {
+            logger.info("更新用户请求参数："+ JSON.toJSONString(reqData));
+            int ret = userService.updateUser(reqData);
+            if (ret > 0){
+                errno = 0;
+                errmsg = "更新用户信息成功！";
+                logger.info("更新用户条数："+ ret);
+            }
+        }catch (Exception e){
+            logger.error("用户更新异常！msg："+e.getMessage());
+        }
+        return returnUtil.returnResult(errno,errmsg,new ArrayList());
+    }
 }

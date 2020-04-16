@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.String.*;
+
 @RestController
 @RequestMapping("/address")
 public class AddressController {
@@ -43,7 +45,14 @@ public class AddressController {
             ret = addressService.getRegion(parentId);
             logger.info("获取区域结果 result：" + ret);
             if (ret.size() > 0){
-                errmsg = "获取区域成功！";
+                for (Map m:ret) {
+                    if((boolean) m.get("type")){
+                        m.put("type",1);
+                    }else {
+                        m.put("type",0);
+                    }
+                }
+                errmsg = "";
                 errno = 0;
             }
         }catch (Exception e){
@@ -69,6 +78,9 @@ public class AddressController {
             ret = addressService.getAddress(userId);
             logger.info("获取地址结果 result：" + ret);
             if (ret.size() > 0){
+                for (Map m:ret) {
+                    m.put("full_region",((m.get("province_name"))) + " " + (m.get("city_name")) + " " + m.get("district_name"));
+                }
                 errmsg = "获取地址成功！";
                 errno = 0;
             }
