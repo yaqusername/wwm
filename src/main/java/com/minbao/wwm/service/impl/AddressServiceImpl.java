@@ -23,4 +23,24 @@ public class AddressServiceImpl implements AddressService {
     public List<Map<String, Object>> getAddress(Integer userId) {
         return addressMapper.getAddress(userId);
     }
+
+    @Override
+    public Map<String, Object> getAddressDetail(Integer userId) {
+        return addressMapper.getAddressDetail(userId);
+    }
+
+    @Override
+    public Integer addAddress(Map<String, Object> reqMap) {
+        return addressMapper.addAddress(reqMap);
+    }
+
+    @Override
+    public Integer deleteAddress(Map<String, Object> reqMap) {
+        return addressMapper.deleteAddress(reqMap);
+    }
+
+    @Override
+    public Integer updateAddress(Map<String, Object> reqMap) {
+        return addressMapper.updateAddress(reqMap);
+    }
 }

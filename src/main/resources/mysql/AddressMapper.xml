@@ -4,7 +4,7 @@
 
 	<!-- 获取区域 -->
 	<select id="getRegion" parameterType="String" resultType="Map">
-		SELECT * from m_region where parent_id = #{parentId};
+		SELECT id,parent_id,name,type*1 as type,agency_id,area,area_code,far_area from m_region where parent_id = #{parentId};
 	</select>
 
 	<!-- 获取地址 -->
@@ -16,4 +16,24 @@
 		where a.user_id = #{userId};
 	</select>
 
+	<!-- 获取地址详情 -->
+	<select id="getAddressDetail" parameterType="Integer" resultType="Map">
+		select * from m_address where user_id = #{userId} and id = 0 limit 1;
+	</select>
+
+	<!-- 添加收货地址 -->
+	<insert id="addAddress" parameterType="Map">
+		insert into m_address(name,user_id,country_id,province_id,city_id,area_id,address,mobile,is_default,is_delete)
+			values (#{name},#{user_id},0,#{province_id},#{city_id},#{district_id},#{address},#{mobile},#{is_default},0);
+	</insert>
+
+	<!-- 删除收获地址 -->
+	<update id="deleteAddress" parameterType="Map">
+		UPDATE m_address set is_delete = 1 where id = #{id};
+	</update>
+
+	<!-- 更新收获地址 -->
+	<update id="updateAddress" parameterType="Map">
+		UPDATE m_address set name = #{name},user_id = #{user_id},province_id = #{province_id},city_id = #{city_id},area_id = #{district_id},address = #{address},mobile = #{mobile},is_default = #{is_default} where id = #{id};
+	</update>
 </mapper>
