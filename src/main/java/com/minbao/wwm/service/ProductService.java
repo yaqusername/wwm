@@ -16,4 +16,6 @@ public interface ProductService {
     Map<String,Object> detail(String productId);
 
     List<Map<String,Object>> getProductByCategoryId(Map<String,Object> reqMap);
+
+    List<Map<String,Object>> searchList(String keyword,String sort,String order,String sales);
 }

@@ -74,8 +74,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Map<String, Object> detail(String productId) {
-        int errno = 1;
-        String errmsg = "获取产品详情失败！";
+        int errno = -1;
+        String errmsg;
         Map<String,Object> result = new HashMap<>();
         Map<String,Object> data = new HashMap<>();
         try {
@@ -97,6 +97,7 @@ public class ProductServiceImpl implements ProductService {
             errno = 0;
         }catch (Exception e){
             logger.error("获取产品详情异常！msg："+e.getMessage(),e);
+            errmsg = "获取产品详情异常";
         }
         result.put("errno",errno);
         result.put("errmsg",errmsg);
@@ -108,5 +109,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<Map<String, Object>> getProductByCategoryId(Map<String,Object> reqMap) {
         return productMapper.getProductByCategoryId(reqMap);
+    }
+
+    @Override
+    public List<Map<String,Object>> searchList(String keyword,String sort,String order,String sales) {
+        return productMapper.searchList(keyword,sort,order,sales);
     }
 }

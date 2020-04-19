@@ -25,4 +25,7 @@ public interface ProductMapper {
 
     //图片资源
     List<Map<String,Object>> imageResouce(String productId);
+
+    //产品搜索列表
+    List<Map<String,Object>> searchList(String keyword,String sort,String order,String sales);
 }

@@ -37,4 +37,12 @@
 	<select id="imageResouce" resultType="Map">
 		SELECT * FROM m_goods_gallery WHERE goods_id = #{productId} AND is_delete = 0  ORDER BY sort_order LIMIT 6;
 	</select>
+
+	<!-- 搜索产品列表 -->
+	<select id="searchList" parameterType="String" resultType="Map">
+		SELECT * FROM m_goods WHERE is_on_sale = 1 AND is_delete = 0 AND name LIKE <![CDATA[CONCAT(CONCAT('%',#{keyword}),'%')]]>
+			<if test="sort == 'default'"> ORDER BY sort asc </if>
+		 	<if test="sort == 'price'"> ORDER BY retail_price asc </if>
+		 	<if test="sort == 'sales'"> ORDER BY sell_volume desc </if>
+	</select>
 </mapper>

@@ -2,15 +2,18 @@ package com.minbao.wwm.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.minbao.wwm.common.ErrorCMD;
+import com.minbao.wwm.common.ReturnUtil;
 import com.minbao.wwm.dto.RequestJson;
 import com.minbao.wwm.dto.ResponseJson;
 import com.minbao.wwm.service.ProductService;
+import com.sun.org.apache.xerces.internal.xs.datatypes.ObjectList;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,12 +27,14 @@ public class ProductController {
     @Autowired
     ProductService productService;
 
+    @Autowired
+    ReturnUtil returnUtil;
+
     /**
      * 添加产品
      * @param requestJson
      * @return
      */
-    @ResponseBody
     @RequestMapping(value = "/addProduct", method = RequestMethod.POST)
     public ResponseJson addProduct(@RequestBody RequestJson requestJson){
         try {
@@ -46,7 +51,6 @@ public class ProductController {
         }
     }
 
-    @ResponseBody
     @RequestMapping("/count")
     public Map<String,Object> count(){
         Map<String,Object> result = new HashMap<>();
@@ -74,7 +78,6 @@ public class ProductController {
     }
 
     @RequestMapping("/getProductByCategoryId")
-    @ResponseBody
     public Map<String,Object> getProductByCategoryId(@RequestBody Map<String,Object> reqData){
         Map<String,Object> data = new HashMap<>();
         Map<String,Object> reqMap = new HashMap<>();
@@ -113,27 +116,47 @@ public class ProductController {
         data.put("pageSize",size);
         data.put("currentPage",currrentPage);
         data.put("data",ret);
-        logger.info("通过分类ID获取产品列表成功！msg：" + JSON.toJSONString(getResult(errno,errmsg,data)));
-        return getResult(errno,errmsg,data);
+        logger.info("通过分类ID获取产品列表成功！msg：" + JSON.toJSONString(returnUtil.returnResult(errno,errmsg,data)));
+        return returnUtil.returnResult(errno,errmsg,data);
     }
 
     @RequestMapping(value = "/detail")
     public Map<String,Object> detail(String id){
         if (StringUtils.isBlank(id)){
-            Map<String,Object> err = new HashMap<>();
-            err.put("errno",-1);
-            err.put("errmsg","产品ID不能为空！");
-            err.put("data","");
+            return returnUtil.returnResult(-1,"产品ID不能为空！",new HashMap());
         }
         logger.info("获取产品详情请求参数：productId："+ id);
         return productService.detail(id);
     }
 
-    private Map<String,Object> getResult(int errno,String errmsg,Map data){
-        Map<String,Object> result = new HashMap<>();
-        result.put("errno",errno);
-        result.put("errmsg",errmsg);
-        result.put("data",data);
-        return result;
+    @RequestMapping("/searchList")
+    public Map<String,Object> searchList(String keyword,String sort,String order,String sales){
+        int errno = -1;
+        String errmsg = "搜索商品失败！";
+        if (StringUtils.isBlank(keyword)){
+            return returnUtil.returnResult(errno,"请输入搜索关键字！",new HashMap());
+        }
+        if (StringUtils.isBlank(sort)){
+            return returnUtil.returnResult(errno,"sort不能为空！",new HashMap());
+        }
+        if (StringUtils.isBlank(order)){
+            return returnUtil.returnResult(errno,"order不能为空！",new HashMap());
+        }
+        if (StringUtils.isBlank(sales)){
+            return returnUtil.returnResult(errno,"sales不能为空！",new HashMap());
+        }
+        List<Map<String,Object>> ret = new ArrayList<>();
+        try {
+            ret = productService.searchList(keyword,sort,order,sales);
+            if (ret != null){
+                errmsg = "搜索商品成功！";
+                return returnUtil.returnResult(0,errmsg,ret);
+            }
+        }catch (Exception e){
+            errno = -1;
+            errmsg = "搜索商品异常！";
+            logger.error("搜索商品异常！ msg：" + e.getMessage());
+        }
+        return returnUtil.returnResult(errno,errmsg,ret);
     }
 }
