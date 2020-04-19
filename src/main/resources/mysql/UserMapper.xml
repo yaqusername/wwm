@@ -21,4 +21,9 @@
 		update m_user set name = #{name},mobile = #{mobile} where id = #{id};
 	</update>
 
+	<!-- 获取userInfo -->
+	<select id="getUserDetail" parameterType="Map">
+		select name ,mobile from m_user where id = #{userId} limit 1;
+	</select>
+
 </mapper>

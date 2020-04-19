@@ -9,4 +9,6 @@ public interface UserMapper {
     Integer updateUser(Map<String,Object> map);
 
     Map<String,Object> searchUser(Map<String,Object> map);
+
+    Map<String,Object>  getUserDetail(Integer userId);
 }

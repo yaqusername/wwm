@@ -13,4 +13,14 @@ public interface MainMapper {
     List<Map<String,Object>> getNotice();
 
     List<Map<String,Object>> getProduct();
+
+    Integer clearHistory(Object userId);
+
+    Map<String,Object> defaultSearch(Object userId);
+
+    List<Map<String,Object>> historySearch(Object userId);
+
+    List<Map<String,Object>> hotSearch(Object userId);
+
+    List<String> searchHelper(Object keyword);
 }

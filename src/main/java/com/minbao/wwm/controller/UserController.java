@@ -90,7 +90,6 @@ public class UserController {
     public Map<String,Object> updateUser(@RequestBody Map<String,Object> reqData) {
         int errno = -1;
         String errmsg = "用户更新失败！";
-        Map<String,Object> result = new HashMap<>();
         if (reqData.get("id")== null || reqData.get("id") == ""){
             return returnUtil.returnResult(errno,"userId不能为空!",new ArrayList());
         }
@@ -115,32 +114,25 @@ public class UserController {
         return returnUtil.returnResult(errno,errmsg,new ArrayList());
     }
 
-    @RequestMapping("/userDetail")
-    public Map<String,Object> userDetail(@RequestBody Map<String,Object> reqData) {
+    @RequestMapping("/getUserDetail")
+    public Map<String,Object> getUserDetail(Integer userId) {
         int errno = -1;
-        String errmsg = "用户更新失败！";
-        Map<String,Object> result = new HashMap<>();
-        if (reqData.get("id")== null || reqData.get("id") == ""){
+        String errmsg = "获取用户信息失败！";
+        if (userId == null){
             return returnUtil.returnResult(errno,"userId不能为空!",new ArrayList());
         }
-        if (StringUtils.isBlank((String) reqData.get("name"))){
-            return returnUtil.returnResult(errno,"姓名不能为空!",new ArrayList());
-        }
-        if (StringUtils.isBlank((String) reqData.get("mobile"))){
-            return returnUtil.returnResult(errno,"手机号不能为空!",new ArrayList());
-        }
-
+        Map<String,Object> ret = new HashMap<>();
         try {
-            logger.info("更新用户请求参数："+ JSON.toJSONString(reqData));
-            int ret = userService.updateUser(reqData);
-            if (ret > 0){
+            logger.info("获取用户信息请求参数，userId：" + userId);
+            ret = userService.getUserDetail(userId);
+            if (ret != null){
                 errno = 0;
-                errmsg = "更新用户信息成功！";
-                logger.info("更新用户条数："+ ret);
+                errmsg = "获取用户信息成功！";
+                logger.info("获取用户信息结果："+ ret);
             }
         }catch (Exception e){
-            logger.error("用户更新异常！msg："+e.getMessage());
+            logger.error("获取用户信息异常！msg："+e.getMessage());
         }
-        return returnUtil.returnResult(errno,errmsg,new ArrayList());
+        return returnUtil.returnResult(errno,errmsg,ret);
     }
 }

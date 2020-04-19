@@ -11,4 +11,6 @@ public interface UserService {
     Integer updateUser(Map<String,Object> map);
 
     Map<String,Object> searchUser(Map<String,Object> map);
+
+    Map<String,Object>  getUserDetail(Integer userId);
 }

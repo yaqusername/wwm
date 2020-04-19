@@ -1,12 +1,13 @@
 package com.minbao.wwm.controller;
 
-import com.minbao.wwm.dto.ResponseJson;
+import com.minbao.wwm.common.ReturnUtil;
 import com.minbao.wwm.service.BannerService;
 import com.minbao.wwm.service.CategoryService;
 import com.minbao.wwm.service.MainService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +22,7 @@ import java.util.Map;
 public class MainController {
 
     private static final Logger  logger = LoggerFactory.getLogger(MainController.class);
+    private static final int ERRNO = -1;
 
     @Autowired
     MainService mainService;
@@ -30,6 +32,9 @@ public class MainController {
 
     @Autowired
     BannerService bannerService;
+
+    @Autowired
+    ReturnUtil returnUtil;
 
     /**
      * 获取前端展示设置
@@ -101,5 +106,82 @@ public class MainController {
             logger.error(e.getMessage());
         }
         return result;
+    }
+
+    /**
+     * 清除搜索历史
+     * @return
+     */
+    @RequestMapping("/search/clearHistory")
+    public Map<String,Object> clearHistory(@RequestBody Map<String,Object> reqMap){
+        Object userId = reqMap.get("userId");
+        int errno = ERRNO;
+        String errmsg = "清楚历史搜索失败！";
+        if (userId == null){
+            return returnUtil.returnResult(ERRNO,"用户ID不能为空！",new HashMap());
+        }
+        try {
+            logger.info("清楚历史搜索请求数据。userId ：" + userId);
+            Integer ret = mainService.clearHistory(userId);
+            if (ret != null && ret > 0){
+                errmsg = "清楚历史搜索成功！";
+                errno = 0;
+            }
+        }catch (Exception e){
+            logger.error("清楚历史搜索异常！msg：" + e.getMessage(),e);
+            errmsg = "清楚历史搜索异常";
+        }
+        return returnUtil.returnResult(errno,errmsg,new HashMap());
+    }
+
+    /**
+     * 搜索页面数据
+     * @return
+     */
+    @RequestMapping("/searchIndex")
+    public Map<String,Object> searchIndex(String userId){
+        int errno = ERRNO;
+        String errmsg = "获取搜索页面数据失败！";
+        Map<String,Object> data;
+        if (userId == null){
+            return returnUtil.returnResult(ERRNO,"用户ID不能为空！",new HashMap());
+        }
+        try {
+            logger.info("获取搜索页面数据请求参数。userId ：" + userId);
+            data = mainService.searchIndex(userId);
+            if (data != null){
+                errmsg = "获取搜索页面数据成功！";
+                errno = 0;
+                return returnUtil.returnResult(errno,errmsg,data);
+            }
+        }catch (Exception e){
+            logger.error("获取搜索页面数据异常！msg：" + e.getMessage(),e);
+            errmsg = "获取搜索页面数据异常";
+        }
+        return returnUtil.returnResult(errno,errmsg,new HashMap());
+    }
+
+    /**
+     * 搜索帮助
+     * @return
+     */
+    @RequestMapping("/searchHelper")
+    public Map<String,Object> searchHelper(String keyword){
+        int errno = ERRNO;
+        String errmsg = "获取搜索帮助数据失败！";
+        List<String> data;
+        try {
+            logger.info("获取搜索帮助数据请求参数。keyword ：" + keyword);
+            data = mainService.searchHelper(keyword);
+            if (data != null){
+                errmsg = "获取搜索帮助数据成功！";
+                errno = 0;
+                return returnUtil.returnResult(errno,errmsg,data);
+            }
+        }catch (Exception e){
+            logger.error("获取搜索帮助数据异常！msg：" + e.getMessage(),e);
+            errmsg = "获取搜索帮助数据异常";
+        }
+        return returnUtil.returnResult(errno,errmsg,new HashMap());
     }
 }

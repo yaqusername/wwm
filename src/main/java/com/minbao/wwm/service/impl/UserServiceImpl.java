@@ -47,4 +47,9 @@ public class UserServiceImpl implements UserService {
     public Map<String, Object> searchUser(Map<String, Object> map) {
         return userMapper.searchUser(map);
     }
+
+    @Override
+    public Map<String,Object>  getUserDetail(Integer userId) {
+        return userMapper.getUserDetail(userId);
+    }
 }

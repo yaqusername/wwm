@@ -1,11 +1,11 @@
 package com.minbao.wwm.dao.mapper;
 
-import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.List;
 import java.util.Map;
 
-@MapperScan
+@Qualifier("mysqlSessionFactory")
 public interface AddressMapper {
 
     List<Map<String,Object>> getRegion(String parentId);

@@ -17,4 +17,28 @@
 		SELECT * FROM m_goods where is_index = 1;
 	</select>
 
+	<!--  清除历史搜索数据 -->
+	<delete id="clearHistory" parameterType="Object">
+		delete from m_search_history where user_id = #{userId};
+	</delete>
+
+	<!-- 搜索框默认数据 -->
+	<select id="defaultSearch" parameterType="Object" resultType="Map">
+		SELECT * from m_keywords where is_default = 1 limit 1;
+	</select>
+
+	<!-- 热门搜索数据 -->
+	<select id="hotSearch" parameterType="Object" resultType="Map">
+		SELECT keyword,is_hot from m_keywords where is_hot = 1 and is_show = 1 ORDER BY id limit 20;
+	</select>
+
+	<!-- 历史搜索数据 -->
+	<select id="historySearch" parameterType="Object" resultType="Map">
+		SELECT keyword from m_search_history where 1 = 1 and user_id = #{userId} ORDER BY id limit 20;
+	</select>
+
+	<!-- 搜索帮助 -->
+	<select id="searchHelper" parameterType="Object" resultType="String">
+		SELECT DISTINCT keyword FROM m_keywords WHERE keyword LIKE <![CDATA[CONCAT(#{keyword},'%')]]> LIMIT 10;
+	</select>
 </mapper>
