@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.minbao.wwm.dao.mapper.OrderMapper">
+
+	<!--未付款订单-->
+	<select id="unpaid" resultType="Map" parameterType="Object">
+		SELECT COUNT(1) AS toPay FROM m_order WHERE user_id = #{userId} AND is_delete = 0 AND order_status IN ('101','801') LIMIT 1;
+	</select>
+
+	<!-- 已付款未发货 -->
+	<select id="paid" parameterType="Object" resultType="Map">
+		SELECT COUNT(1) AS toDelivery FROM m_order WHERE user_id = #{userId} AND is_delete = 0 AND order_status = 300 LIMIT 1;
+	</select>
+
+	<!-- 已发货订单 -->
+	<select id="shipped" parameterType="Object" resultType="Map">
+		SELECT COUNT(1) AS toReceive FROM m_order WHERE user_id = #{userId} AND is_delete = 0 AND order_status = 301 LIMIT 1;
+	</select>
+</mapper>

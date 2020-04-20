@@ -5,17 +5,16 @@ import com.minbao.wwm.service.AddressService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.lang.String.*;
 
 @RestController
 @RequestMapping("/address")
@@ -23,15 +22,15 @@ public class AddressController {
 
     private static final Logger logger = LoggerFactory.getLogger(AddressController.class);
 
-    @Autowired
+    @Resource
     AddressService addressService;
 
-    @Autowired
+    @Resource
     ReturnUtil returnUtil;
 
     /**
      * 通过区域parentId获取区域
-     * @return
+     * @return Map
      */
     @RequestMapping("/getRegion")
     public Map<String,Object> getRegion(String parentId){
@@ -57,7 +56,7 @@ public class AddressController {
 
     /**
      * 通过userId获取收货地址
-     * @return
+     * @return Map
      */
     @RequestMapping("/getAddress")
     public Map<String,Object> getAddress(Integer userId){
@@ -72,7 +71,7 @@ public class AddressController {
             ret = addressService.getAddress(userId);
             logger.info("获取地址结果 result：" + ret);
             if (ret.size() > 0){
-                for (Map m:ret) {
+                for (Map<String,Object> m:ret) {
                     m.put("full_region",((m.get("province_name"))) + " " + (m.get("city_name")) + " " + m.get("district_name"));
                 }
                 errmsg = "获取地址成功！";
@@ -104,7 +103,7 @@ public class AddressController {
     public Map<String,Object> addAddress(@RequestBody Map<String,Object> reqMap){
         int errno = -1;
         String errmsg = "添加收获地址失败！";
-        Integer ret = 0;
+        Integer ret;
         try {
             Object id = reqMap.get("id");
             if (id != null){
@@ -132,7 +131,7 @@ public class AddressController {
     public Map<String,Object> deleteAddress(@RequestBody Map<String,Object> reqMap){
         int errno = -1;
         String errmsg = "";
-        Integer ret = 0;
+        Integer ret;
         try {
             ret = addressService.deleteAddress(reqMap);
             if (ret != null && ret > 0){
