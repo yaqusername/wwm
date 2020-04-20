@@ -120,8 +120,9 @@ public class AddressController {
                     errmsg = "添加收获地址成功！";
                 }
             }
+            logger.info("添加或修改收货地址返回参数："+ret);
         }catch (Exception e){
-            logger.error("添加收获地址异常！msg：" + e.getMessage(),e);
+            logger.error("添加或更新收获地址异常！msg：" + e.getMessage(),e);
         }
         return returnUtil.returnResult(errno,errmsg,new HashMap());
     }
