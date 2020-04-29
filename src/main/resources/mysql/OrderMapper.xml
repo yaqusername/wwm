@@ -4,16 +4,56 @@
 
 	<!--未付款订单-->
 	<select id="unpaid" resultType="Map" parameterType="Object">
-		SELECT COUNT(1) AS toPay FROM m_order WHERE user_id = #{userId} AND is_delete = 0 AND order_status IN ('101','801') LIMIT 1;
+		SELECT COUNT(1) AS toPay FROM m_order WHERE user_id = #{userId} AND is_delete = 0  AND order_type &lt; 7 AND order_status IN ('101','801') LIMIT 1;
 	</select>
 
 	<!-- 已付款未发货 -->
 	<select id="paid" parameterType="Object" resultType="Map">
-		SELECT COUNT(1) AS toDelivery FROM m_order WHERE user_id = #{userId} AND is_delete = 0 AND order_status = 300 LIMIT 1;
+		SELECT COUNT(1) AS toDelivery FROM m_order WHERE user_id = #{userId} AND is_delete = 0  AND order_type &lt; 7 AND order_status = 300 LIMIT 1;
 	</select>
 
 	<!-- 已发货订单 -->
 	<select id="shipped" parameterType="Object" resultType="Map">
-		SELECT COUNT(1) AS toReceive FROM m_order WHERE user_id = #{userId} AND is_delete = 0 AND order_status = 301 LIMIT 1;
+		SELECT COUNT(1) AS toReceive FROM m_order WHERE user_id = #{userId} AND is_delete = 0  AND order_type &lt; 7 AND order_status = 301 LIMIT 1;
+	</select>
+
+	<!-- 获取所有订单 -->
+	<select id="getAllOrder" resultType="Map" parameterType="Object">
+		SELECT `id`,`add_time`,`actual_price`,`freight_price`,`offline_pay` FROM `m_order` WHERE ( `user_id` = #{userId} ) AND ( `is_delete` = 0 ) AND ( `order_type` &lt;  7 ) AND ( `order_status` IN (101,102,103,201,202,203,300,301,302,303,401) ) ORDER BY add_time DESC LIMIT #{page},#{size};
+	</select>
+
+	<!-- 添加订单 -->
+	<insert id="addOrder" parameterType="Map">
+		<selectKey keyProperty="id" order="AFTER" resultType="Integer">
+			select LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO `m_order` (`order_sn`,`user_id`,`order_status`,`offline_pay`,`consignee`,`province`,`city`,`district`,`address`,`print_info`,`mobile`,`postscript`,`change_price`,`actual_price`,`order_price`,`goods_price`,`add_time`,`freight_price`,order_type,is_delete,express_value)
+		VALUES (#{orderNo},#{user_id},101,#{offlinePay},#{name},#{province_id},#{city_id},#{area_id},#{address},'',#{mobile},#{mark},0,#{actualPrice},#{orderTotalPrice},#{goodsTotalPrice},SYSDATE(),#{freightPrice},0,0,0);
+	</insert>
+
+	<!-- 添加订单 -->
+	<insert id="addOrderGoods" parameterType="Map">
+		INSERT INTO `m_order_goods` (`order_id`,`goods_id`,`goods_name`,`goods_aka`,`product_id`,`number`,`retail_price`,`goods_specifition_name_value`,`goods_specifition_ids`,`list_pic_url`,`user_id`,is_delete)
+		VALUES (#{orderId},#{goods_id},#{goods_name},#{goods_aka},#{product_id},#{number},#{retail_price},#{goods_specifition_name_value},#{goods_specifition_ids},#{list_pic_url},#{userId},0)
+	</insert>
+
+	<!-- 删除订单 -->
+	<update id="delete" parameterType="Object">
+		UPDATE `m_order` SET `is_delete`=1 WHERE id = #{id};
+	</update>
+
+	<!-- 取消订单 -->
+	<update id="cancel" parameterType="Object">
+		UPDATE m_order SET order_status = 102 WHERE id = #{id};
+	</update>
+
+	<!-- 订单单个商品详情 -->
+	<select id="orderDetail" parameterType="Object" resultType="Map">
+		select * from m_order where id = #{orderId} and user_id = #{userId} limit 1;
+	</select>
+
+	<!-- 查询订单商品 -->
+	<select id="getOrderGoods" parameterType="Object" resultType="Map">
+		SELECT * FROM `m_order_goods` WHERE ( `user_id` = #{userId} ) AND ( `order_id` = #{orderId} ) AND ( `is_delete` = 0 )
 	</select>
 </mapper>

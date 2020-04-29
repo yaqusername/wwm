@@ -13,12 +13,25 @@
 			LEFT JOIN m_region r1 ON r1.id = a.province_id
 			LEFT JOIN m_region r2 ON r2.id = a.city_id
 			LEFT JOIN m_region r3 ON r3.id = a.area_id
-		where a.user_id = #{userId};
+		where a.user_id = #{userId} and a.is_delete = 0;
 	</select>
 
 	<!-- 获取地址详情 -->
 	<select id="getAddressDetail" parameterType="Integer" resultType="Map">
-		select * from m_address where user_id = #{userId} and id = 0 limit 1;
+		SELECT a.*,r1.`name` as province_name,r2.`name` as city_name,r3.`name` as district_name from m_address a
+			LEFT JOIN m_region r1 ON r1.id = a.province_id
+			LEFT JOIN m_region r2 ON r2.id = a.city_id
+			LEFT JOIN m_region r3 ON r3.id = a.area_id
+		where a.id = #{id} limit 1;
+	</select>
+
+	<!-- 获取地址详情 -->
+	<select id="getDefaultAddress" parameterType="Integer" resultType="Map">
+		SELECT a.*,r1.`name` as province_name,r2.`name` as city_name,r3.`name` as district_name from m_address a
+			LEFT JOIN m_region r1 ON r1.id = a.province_id
+			LEFT JOIN m_region r2 ON r2.id = a.city_id
+			LEFT JOIN m_region r3 ON r3.id = a.area_id
+		where a.user_id = #{userId} and a.is_default = 1 and a.is_delete = 0 limit 1;
 	</select>
 
 	<!-- 添加收货地址 -->
@@ -36,4 +49,9 @@
 	<update id="updateAddress" parameterType="Map">
 		UPDATE m_address set name = #{name},user_id = #{user_id},province_id = #{province_id},city_id = #{city_id},area_id = #{district_id},address = #{address},mobile = #{mobile},is_default = #{is_default} where id = #{id};
 	</update>
+
+	<!-- 查询区域 -->
+	<select id="getAreaName" resultType="String" parameterType="Object">
+		SELECT `name` FROM `m_region` WHERE ( `id` = #{id} ) LIMIT 1;
+	</select>
 </mapper>

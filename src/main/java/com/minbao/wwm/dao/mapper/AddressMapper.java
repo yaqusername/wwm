@@ -12,11 +12,15 @@ public interface AddressMapper {
 
     List<Map<String,Object>> getAddress(Integer userId);
 
-    Map<String,Object> getAddressDetail(Integer userId);
+    Map<String,Object> getAddressDetail(Integer id);
 
     Integer addAddress(Map<String,Object> reqMap);
 
     Integer deleteAddress(Map<String,Object> reqMap);
 
     Integer updateAddress(Map<String,Object> reqMap);
+
+    Map<String,Object> getDefaultAddress(Object userId);
+
+    String getAreaName(Object id);
 }

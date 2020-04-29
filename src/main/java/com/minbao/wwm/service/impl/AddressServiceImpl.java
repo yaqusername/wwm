@@ -25,8 +25,8 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public Map<String, Object> getAddressDetail(Integer userId) {
-        return addressMapper.getAddressDetail(userId);
+    public Map<String, Object> getAddressDetail(Integer id) {
+        return addressMapper.getAddressDetail(id);
     }
 
     @Override
@@ -42,5 +42,10 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public Integer updateAddress(Map<String, Object> reqMap) {
         return addressMapper.updateAddress(reqMap);
+    }
+
+    @Override
+    public Map<String, Object> getDefaultAddress(Object userId) {
+        return addressMapper.getDefaultAddress(userId);
     }
 }

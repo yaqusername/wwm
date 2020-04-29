@@ -1,5 +1,6 @@
 package com.minbao.wwm.service;
 
+import java.util.List;
 import java.util.Map;
 
 public interface CartService {
@@ -19,4 +20,10 @@ public interface CartService {
     Integer deleteCartGoods(Object userId,Object productIds);
 
     Integer isChecked(Object userId,Object productIds,Object isChecked);
+
+    Map<String,Object> checkou(Object addressId,Object addType,Object orderFrom,Object type,Object userId);
+
+    List<Map<String,Object>> getCartProductList(Object userId);
+
+    Integer updateCartGoodsStatus(Object userId);
 }

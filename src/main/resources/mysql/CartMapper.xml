@@ -62,4 +62,19 @@
 	<update id="isChecked" parameterType="Object">
 		update m_cart set checked = #{isChecked} where  user_id = #{userId} and product_id = #{productIds} and is_delete = 0;
 	</update>
+
+	<!-- 加入订单前获取购物车商品列表 -->
+	<select id="getCartProductList" parameterType="Object" resultType="Map">
+		select * from m_cart where user_id = #{userId} and is_delete = 0 and is_on_sale = 1 and checked = 1;
+	</select>
+
+	<!-- 查询购物车选中商品 -->
+	<select id="cartGoods" parameterType="Object" resultType="Map">
+		 SELECT * FROM `m_cart` WHERE ( `user_id` = #{userId} ) AND ( `checked` = 1 ) AND ( `is_delete` = 0 ) AND ( `is_fast` = 0 )
+	</select>
+
+	<!-- 更新购物车商品提交订单后状态 -->
+	<update id="updateCartGoodsStatus" parameterType="Object">
+		 update m_cart set is_delete = 1 where id in (select * from (select id from m_cart where user_id = #{userId} and is_delete = 0 and is_on_sale = 1 and checked = 1) t);
+	</update>
 </mapper>
