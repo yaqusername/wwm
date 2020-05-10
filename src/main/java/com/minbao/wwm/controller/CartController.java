@@ -34,11 +34,14 @@ public class CartController {
      * @return
      */
     @RequestMapping("/goodsCount")
-    public Map goodsCount(Integer userId){
+    public Map goodsCount(String userId){
         int errno = -1;
         String errmsg = "";
         if (userId == null){
             return returnUtil.returnResult(errno,"用户ID不能为空！",new ArrayList());
+        }
+        if (StringUtils.equals("undefined",userId)){
+            userId = "0";
         }
         Map<String,Object> result;
         Map<String,Object> data = new HashMap<>();
@@ -46,7 +49,7 @@ public class CartController {
         long goodsCount = 0;
         try {
             logger.info("获取购物车商品数量请求参数,userId ：" + userId);
-            result = cartService.goodsCount(userId);
+            result = cartService.goodsCount(Integer.valueOf(userId));
             if (result != null && result.get("count") != null){
                 goodsCount = (long) result.get("count");
                 errno = 0;
@@ -86,7 +89,7 @@ public class CartController {
             return returnUtil.returnResult(errno,"商品数量不能为空！",new ArrayList());
         }
         if (userId == null){
-            return returnUtil.returnResult(errno,"商品数量不能为空！",new ArrayList());
+            return returnUtil.returnResult(errno,"用户Id不能为空！",new ArrayList());
         }
         Integer result;
         Map<String,Object> data = new HashMap<>();
@@ -266,11 +269,14 @@ public class CartController {
      * @param addressId addType orderFrom type
      * @return
      */
-    @RequestMapping("/checkou")
-    public Map checkou(Integer addressId,String addType,String orderFrom,String type,Integer userId){
+    @RequestMapping("/checkout")
+    public Map checkout(Integer addressId,String addType,String orderFrom,String type,String userId){
         int errno = -1;
         String errmsg = "选择或取消选择商品产品失败！";
         Map<String,Object> data = new HashMap<>();
+        if (StringUtils.equals("undefined",userId)){
+            userId = "0";
+        }
         if (addressId == null){
             return returnUtil.returnResult(errno,"addressId不能为空！",new HashMap());
         }
@@ -283,12 +289,12 @@ public class CartController {
         if (type == null || StringUtils.equals("",type)){
             return returnUtil.returnResult(errno,"type不能为空！",new HashMap());
         }
-        if (userId == null || userId == 0){
+        if (userId == null){
             return returnUtil.returnResult(errno,"userId不能为空！",new HashMap());
         }
         try {
             logger.info("加入订单前检验请求数据 request ：" );
-            data = cartService.checkou(addressId,addType,orderFrom,type,userId);
+            data = cartService.checkout(addressId,addType,orderFrom,type,userId);
             if (data != null){
                 errno = 0;
                 errmsg = "加入订单前检验成功！";
@@ -320,9 +326,6 @@ public class CartController {
             if (data != null){
                 errno = 0;
                 errmsg = "获取购物车选中商品成功！";
-                //更新购物车商品提交订单后状态
-                cartService.updateCartGoodsStatus(userId);
-
                 return returnUtil.returnResult(errno,errmsg,data);
             }
         }catch (Exception e){

@@ -9,22 +9,22 @@
 
 	<!-- 查询购物车商品数量 -->
 	<select id="goodsCount" parameterType="Object" resultType="Map">
-		SELECT count(*) as count FROM m_cart WHERE user_id = #{userId} and is_delete = 0 and is_on_sale = 1;
+		SELECT count(*) as count FROM m_cart WHERE user_id = #{userId} and is_delete != 1 and is_on_sale = 1;
 	</select>
 
 	<!-- 添加购物车-获取商品信息 -->
 	<select id="addCartGetGoods" parameterType="Object" resultType="Map">
-		SELECT name as goods_name,list_pic_url,freight_template_id,is_on_sale FROM m_goods WHERE id = #{goodsId} and is_delete = 0 and is_on_sale = 1;
+		SELECT name as goods_name,list_pic_url,freight_template_id,is_on_sale FROM m_goods WHERE id = #{goodsId} and is_delete != 1 and is_on_sale = 1;
 	</select>
 
 	<!-- 添加购物车-获取产品信息 -->
 	<select id="addCartGetProduct" parameterType="Object" resultType="Map">
-		SELECT goods_name as goods_aka,goods_sn,goods_weight,retail_price FROM m_product WHERE id = #{productId} and is_delete = 0 and is_on_sale = 1;
+		SELECT goods_name as goods_aka,goods_sn,goods_weight,retail_price FROM m_product WHERE id = #{productId} and is_delete != 1 and is_on_sale = 1;
 	</select>
 
 	<!-- 添加购物车-获取产品规格 -->
 	<select id="addCartGetGoodsSpecification" parameterType="Object" resultType="Map">
-		SELECT specification_id as goods_specifition_ids,value as goods_specifition_name_value FROM m_goods_specification WHERE goods_id = #{goodsId} and is_delete = 0;
+		SELECT specification_id as goods_specifition_ids,value as goods_specifition_name_value FROM m_goods_specification WHERE goods_id = #{goodsId} and is_delete != 1 limit 1;
 	</select>
 
 	<!-- 添加购物车 -->
@@ -35,12 +35,12 @@
 
 	<!-- 获取购物车产品详情 -->
 	<select id="getCartDetail" parameterType="Object" resultType="Map">
-		SELECT * from m_cart where user_id = #{userId} and is_delete = 0 and is_on_sale = 1;
+		SELECT * from m_cart where user_id = #{userId} and is_delete != 1 and is_on_sale = 1;
 	</select>
 
 	<!-- 获取购物车选中商品数量 -->
 	<select id="checkedGoodsCount" parameterType="Object" resultType="Map">
-		SELECT count(*) as checkedGoodsCount from m_cart where user_id = #{userId} and checked = 1 and is_delete = 0;
+		SELECT count(*) as checkedGoodsCount from m_cart where user_id = #{userId} and checked = 1 and is_delete != 1;
 	</select>
 
 	<!-- 更新购物车 -->
@@ -50,31 +50,31 @@
 
 	<!-- 判断购物车是否加入过该商品 -->
 	<select id="chechAddCart" parameterType="Object" resultType="Map">
-		select count(*) as count from m_cart where  goods_id = #{goodsId} and product_id = #{productId} and user_id = #{userId} and is_delete = 0;
+		select count(*) as count from m_cart where  goods_id = #{goodsId} and product_id = #{productId} and user_id = #{userId} and is_delete != 1;
 	</select>
 	
 	<!-- 删除购物车产品 -->
 	<update id="deleteCartGoods" parameterType="Object">
-		update m_cart set is_delete = 1 where user_id = #{userId} and product_id = #{productIds} and is_delete = 0;
+		update m_cart set is_delete = 1 where user_id = #{userId} and product_id = #{productIds} and is_delete != 1;
 	</update>
 
 	<!-- 选择或取消选择商品 -->
 	<update id="isChecked" parameterType="Object">
-		update m_cart set checked = #{isChecked} where  user_id = #{userId} and product_id = #{productIds} and is_delete = 0;
+		update m_cart set checked = #{isChecked} where  user_id = #{userId} and product_id = #{productIds} and is_delete != 1;
 	</update>
 
 	<!-- 加入订单前获取购物车商品列表 -->
 	<select id="getCartProductList" parameterType="Object" resultType="Map">
-		select * from m_cart where user_id = #{userId} and is_delete = 0 and is_on_sale = 1 and checked = 1;
+		select * from m_cart where user_id = #{userId} and is_delete != 1 and is_on_sale = 1 and checked = 1;
 	</select>
 
 	<!-- 查询购物车选中商品 -->
 	<select id="cartGoods" parameterType="Object" resultType="Map">
-		 SELECT * FROM `m_cart` WHERE ( `user_id` = #{userId} ) AND ( `checked` = 1 ) AND ( `is_delete` = 0 ) AND ( `is_fast` = 0 )
+		 SELECT * FROM `m_cart` WHERE ( `user_id` = #{userId} ) AND ( `checked` = 1 ) AND ( `is_delete` != 1 ) AND ( `is_fast` != 1 )
 	</select>
 
 	<!-- 更新购物车商品提交订单后状态 -->
 	<update id="updateCartGoodsStatus" parameterType="Object">
-		 update m_cart set is_delete = 1 where id in (select * from (select id from m_cart where user_id = #{userId} and is_delete = 0 and is_on_sale = 1 and checked = 1) t);
+		 update m_cart set is_delete = 1 where id in (select * from (select id from m_cart where user_id = #{userId} and is_delete != 1 and is_on_sale = 1 and checked = 1) t);
 	</update>
 </mapper>

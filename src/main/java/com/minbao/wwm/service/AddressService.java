@@ -17,5 +17,7 @@ public interface AddressService {
 
     Integer updateAddress(Map<String,Object> reqMap);
 
+    Integer clearDefaultAddress(Object userId);
+
     Map<String,Object> getDefaultAddress(Object userId);
 }

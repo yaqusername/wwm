@@ -52,16 +52,25 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Map<String, Object> getAllOrder(String userId, String showType, Integer size, Integer page) {
+    public List<Map<String, Object>> getAllOrder(String userId, String showType, Integer size, Integer page) {
 
         //订单列表
         List<Map<String,Object>> orderList = orderMapper.getAllOrder(userId,showType,size,page);
         if (orderList != null && orderList.size() > 0){
             for (Map<String,Object> map:orderList) {
-
+                Object orderId = map.get("id");
+                List<Map<String,Object>> ret = orderMapper.getOrderGoods(userId,orderId);
+                if (ret.size() > 0){
+                    map.put("goodsList",ret);
+                }
+                Map<String,Object> count = orderMapper.orderCount(userId,showType,size,page);
+                if (count != null && count.size() > 0){
+                    map.put("goodsCount",Integer.valueOf(String.valueOf(count.get("count"))));
+                }
+                map.put("handleOption",new HashMap<>());
             }
         }
-        return null;
+        return orderList;
     }
 
     @Override
@@ -82,7 +91,7 @@ public class OrderServiceImpl implements OrderService {
         Map<String,Object> reqMap = new HashMap<>();
         Map<String,Object> ret = new HashMap<>();
         Integer result;
-        reqMap = cartService.checkou(addressId,null,null,null,userId);
+        reqMap = cartService.checkout(addressId,null,null,null,userId);
         String orderNo = "ON" + dateFormat.format(new Date()) + s1 + s2;
         if (reqMap.get("checkedAddress") != null){
             reqMap.putAll((Map)reqMap.get("checkedAddress"));
@@ -101,6 +110,8 @@ public class OrderServiceImpl implements OrderService {
                 orderMapper.addOrderGoods(m);
             }
         }
+        //更新购物车商品提交订单后状态
+        cartService.updateCartGoodsStatus(userId);
         return null;
     }
 

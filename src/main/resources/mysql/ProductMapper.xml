@@ -10,37 +10,37 @@
 
 	<!--  获取分类页面产品数量 -->
 	<select id="count" resultType="map" parameterType="map">
-		SELECT COUNT(*) as count from m_goods where 1 = 1 <if test="categoryId != 0"> and category_id = #{categoryId} </if>;
+		SELECT COUNT(*) as count from m_goods where 1 = 1 <if test="categoryId != 0"> and category_id = #{categoryId} </if> and is_delete != 1;
 	</select>
 
 	<!--  通过分类ID获取产品列表 -->
 	<select id="getProductByCategoryId" resultType="map" parameterType="map">
-		SELECT name,id,goods_brief,min_retail_price,list_pic_url,goods_number from m_goods where 1 = 1 <if test="categoryId != 0"> AND category_id = #{categoryId}</if>  order by id limit #{currentPage},#{size};
+		SELECT name,id,goods_brief,min_retail_price,list_pic_url,goods_number from m_goods where 1 = 1 and is_delete != 1 <if test="categoryId != 0"> AND category_id = #{categoryId}</if>  order by id limit #{currentPage},#{size};
 	</select>
 
 	<!-- 商品详情 -->
 	<select id="productInfo" resultType="Map">
-		SELECT * from m_goods where id = #{productId} and is_delete = 0 limit 1;
+		SELECT * from m_goods where id = #{productId} and is_delete != 1 limit 1;
 	</select>
 
 	<!-- 详情列表 -->
 	<select id="productList" resultType="Map">
-		SELECT * FROM m_product WHERE  goods_id = #{productId}  AND  is_delete = 0 ;
+		SELECT * FROM m_product WHERE  goods_id = #{productId}  AND  is_delete != 1 ;
 	</select>
 
 	<!-- 商品规格 -->
 	<select id="specificationList" resultType="Map">
-		SELECT * FROM m_goods_specification WHERE goods_id = #{productId} AND is_delete = 0;
+		SELECT * FROM m_goods_specification WHERE goods_id = #{productId} AND is_delete != 1;
 	</select>
 
 	<!-- 图片资源 -->
 	<select id="imageResouce" resultType="Map">
-		SELECT * FROM m_goods_gallery WHERE goods_id = #{productId} AND is_delete = 0  ORDER BY sort_order LIMIT 6;
+		SELECT * FROM m_goods_gallery WHERE goods_id = #{productId} AND is_delete != 1  ORDER BY sort_order LIMIT 6;
 	</select>
 
 	<!-- 搜索产品列表 -->
 	<select id="searchList" parameterType="String" resultType="Map">
-		SELECT * FROM m_goods WHERE is_on_sale = 1 AND is_delete = 0 AND name LIKE <![CDATA[CONCAT(CONCAT('%',#{keyword}),'%')]]>
+		SELECT * FROM m_goods WHERE is_on_sale = 1 AND is_delete != 1 AND name LIKE <![CDATA[CONCAT(CONCAT('%',#{keyword}),'%')]]>
 			<if test="sort == 'default'"> ORDER BY sort asc </if>
 		 	<if test="sort == 'price'"> ORDER BY retail_price asc </if>
 		 	<if test="sort == 'sales'"> ORDER BY sell_volume desc </if>

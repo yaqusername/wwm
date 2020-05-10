@@ -33,7 +33,7 @@ public class CartServiceImpl implements CartService {
         Map<String,Object> cartGetGoods = cartMapper.addCartGetGoods(goodsId);
         Map<String,Object> cartGetProduct = cartMapper.addCartGetProduct(productId);
         Map<String,Object> cartGetGoodsSpecification = cartMapper.addCartGetGoodsSpecification(goodsId);
-        if (cartGetGoods != null || cartGetGoodsSpecification != null || cartGetProduct != null){
+        if (cartGetGoods == null || cartGetGoodsSpecification == null || cartGetProduct == null){
             return -1;
         }
         reqMap.putAll(cartGetProduct);
@@ -106,7 +106,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public Map<String, Object> checkou(Object addressId, Object addType, Object orderFrom, Object type,Object userId) {
+    public Map<String, Object> checkout(Object addressId, Object addType, Object orderFrom, Object type,Object userId) {
 
         Map<String,Object> result = new HashMap<>();
         result.put("checkedAddress",0);
@@ -116,11 +116,15 @@ public class CartServiceImpl implements CartService {
         if (addressId != null && !StringUtils.equals("0",String.valueOf(addressId))){
             address = addressService.getAddressDetail(Integer.valueOf(String.valueOf(addressId)));
             if (address != null && address.size() > 0){
+                StringBuilder full_region = getFullAddress(address);
+                address.put("full_region",full_region);
                 result.put("checkedAddress",address);
             }
         }else {
             address = addressService.getDefaultAddress(userId);
             if (address != null){
+                StringBuilder full_region = getFullAddress(address);
+                address.put("full_region",full_region);
                 result.put("checkedAddress",address);
             }
         }
@@ -157,5 +161,24 @@ public class CartServiceImpl implements CartService {
     @Override
     public Integer updateCartGoodsStatus(Object userId) {
         return cartMapper.updateCartGoodsStatus(userId);
+    }
+
+    /**
+     * 拼接省市区/县
+     * @param address 地址
+     * @return 省市县
+     */
+    private StringBuilder getFullAddress(Map<String,Object> address){
+        StringBuilder full_region = new StringBuilder();
+        if (StringUtils.isNotBlank(String.valueOf(address.get("province_name")))){
+            full_region.append(address.get("province_name"));
+        }
+        if (StringUtils.isNotBlank(String.valueOf(address.get("city_name")))){
+            full_region.append(address.get("city_name"));
+        }
+        if (StringUtils.isNotBlank(String.valueOf(address.get("district_name")))){
+            full_region.append(address.get("district_name"));
+        }
+        return full_region;
     }
 }

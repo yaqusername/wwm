@@ -23,4 +23,6 @@ public interface AddressMapper {
     Map<String,Object> getDefaultAddress(Object userId);
 
     String getAreaName(Object id);
+
+    Integer clearDefaultAddress(Object userId);
 }

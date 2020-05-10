@@ -63,6 +63,7 @@ public class UserController {
                     if (addUser > 0){
                         logger.info("新用户授权成功！");
                         userInfo.put("id",userInfo.get("id"));
+                        id = (int) userInfo.get("id");
                     }
                 }
                 userInfo.put("id",id);

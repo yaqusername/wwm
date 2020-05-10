@@ -9,16 +9,16 @@
 
 	<!-- 获取地址 -->
 	<select id="getAddress" parameterType="Integer" resultType="Map">
-		SELECT a.*,r1.`name` as province_name,r2.`name` as city_name,r3.`name` as district_name from m_address a
+		SELECT a.*,r1.`name` as province_name,r2.`name` as city_name,r3.`name` as district_name ,a.area_id as district_id from m_address a
 			LEFT JOIN m_region r1 ON r1.id = a.province_id
 			LEFT JOIN m_region r2 ON r2.id = a.city_id
 			LEFT JOIN m_region r3 ON r3.id = a.area_id
-		where a.user_id = #{userId} and a.is_delete = 0;
+		where a.user_id = #{userId} and a.is_delete != 1;
 	</select>
 
 	<!-- 获取地址详情 -->
 	<select id="getAddressDetail" parameterType="Integer" resultType="Map">
-		SELECT a.*,r1.`name` as province_name,r2.`name` as city_name,r3.`name` as district_name from m_address a
+		SELECT a.*,r1.`name` as province_name,r2.`name` as city_name,r3.`name` as district_name, a.area_id as district_id from m_address a
 			LEFT JOIN m_region r1 ON r1.id = a.province_id
 			LEFT JOIN m_region r2 ON r2.id = a.city_id
 			LEFT JOIN m_region r3 ON r3.id = a.area_id
@@ -26,18 +26,18 @@
 	</select>
 
 	<!-- 获取地址详情 -->
-	<select id="getDefaultAddress" parameterType="Integer" resultType="Map">
-		SELECT a.*,r1.`name` as province_name,r2.`name` as city_name,r3.`name` as district_name from m_address a
+	<select id="getDefaultAddress" parameterType="Object" resultType="Map">
+		SELECT a.*,r1.`name` as province_name,r2.`name` as city_name,r3.`name` as district_name, a.area_id as district_id from m_address a
 			LEFT JOIN m_region r1 ON r1.id = a.province_id
 			LEFT JOIN m_region r2 ON r2.id = a.city_id
 			LEFT JOIN m_region r3 ON r3.id = a.area_id
-		where a.user_id = #{userId} and a.is_default = 1 and a.is_delete = 0 limit 1;
+		where a.user_id = #{userId} and a.is_default = 1 and a.is_delete != 1 limit 1;
 	</select>
 
 	<!-- 添加收货地址 -->
 	<insert id="addAddress" parameterType="Map">
 		insert into m_address(name,user_id,country_id,province_id,city_id,area_id,address,mobile,is_default,is_delete)
-			values (#{name},#{user_id},0,#{province_id},#{city_id},#{district_id},#{address},#{mobile},#{is_default},0);
+			values (#{name},#{userId},0,#{province_id},#{city_id},#{district_id},#{address},#{mobile},#{is_default},0);
 	</insert>
 
 	<!-- 删除收获地址 -->
@@ -47,11 +47,16 @@
 
 	<!-- 更新收获地址 -->
 	<update id="updateAddress" parameterType="Map">
-		UPDATE m_address set name = #{name},user_id = #{user_id},province_id = #{province_id},city_id = #{city_id},area_id = #{district_id},address = #{address},mobile = #{mobile},is_default = #{is_default} where id = #{id};
+		UPDATE m_address set name = #{name},user_id = #{userId},province_id = #{province_id},city_id = #{city_id},area_id = #{district_id},address = #{address},mobile = #{mobile},is_default = #{is_default} where id = #{id};
 	</update>
 
 	<!-- 查询区域 -->
 	<select id="getAreaName" resultType="String" parameterType="Object">
 		SELECT `name` FROM `m_region` WHERE ( `id` = #{id} ) LIMIT 1;
 	</select>
+
+	<!-- 刪除默認收穫地址 -->
+	<update id="clearDefaultAddress" parameterType="Object">
+		update m_address set is_default = 0 where user_id = #{userId};
+	</update>
 </mapper>

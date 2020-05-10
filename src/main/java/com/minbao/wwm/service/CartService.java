@@ -21,7 +21,7 @@ public interface CartService {
 
     Integer isChecked(Object userId,Object productIds,Object isChecked);
 
-    Map<String,Object> checkou(Object addressId,Object addType,Object orderFrom,Object type,Object userId);
+    Map<String,Object> checkout(Object addressId,Object addType,Object orderFrom,Object type,Object userId);
 
     List<Map<String,Object>> getCartProductList(Object userId);
 

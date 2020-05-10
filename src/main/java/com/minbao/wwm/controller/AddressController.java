@@ -59,23 +59,28 @@ public class AddressController {
      * @return Map
      */
     @RequestMapping("/getAddress")
-    public Map<String,Object> getAddress(Integer userId){
+    public Map<String,Object> getAddress(String userId){
         List<Map<String,Object>> ret = new ArrayList<>();
         int errno = -1;
-        String errmsg = "获取地址失败！";
+        String errmsg = "未获取到地址！";
         if (userId == null){
             return returnUtil.returnResult(errno,"userId不能为空！",new ArrayList());
         }
+        if (StringUtils.equals("undefined",userId)){
+            userId = "0";
+        }
         try {
             logger.info("获取地址参数userId：" + userId);
-            ret = addressService.getAddress(userId);
+            ret = addressService.getAddress(Integer.valueOf(userId));
             logger.info("获取地址结果 result：" + ret);
+            if (ret != null){
+                errmsg = "获取地址成功！";
+                errno = 0;
+            }
             if (ret.size() > 0){
                 for (Map<String,Object> m:ret) {
                     m.put("full_region",((m.get("province_name"))) + " " + (m.get("city_name")) + " " + m.get("district_name"));
                 }
-                errmsg = "获取地址成功！";
-                errno = 0;
             }
         }catch (Exception e){
             logger.error("获取地址异常！msg：" + e.getMessage(),e);
@@ -90,6 +95,19 @@ public class AddressController {
         Map<String,Object> ret = new HashMap<>();
         try {
             ret = addressService.getAddressDetail(id);
+            StringBuilder full_region = new StringBuilder();
+            if (ret != null){
+                if (ret.get("province_name") != null){
+                    full_region.append(ret.get("province_name"));
+                }
+                if (ret.get("city_name") != null){
+                    full_region.append(ret.get("city_name"));
+                }
+                if (ret.get("district_name") != null){
+                    full_region.append(ret.get("district_name"));
+                }
+                ret.put("full_region",full_region);
+            }
             errno = 0;
             errmsg = "获取地址详情成功！";
         }catch (Exception e){
@@ -106,6 +124,9 @@ public class AddressController {
         Integer ret;
         try {
             Object id = reqMap.get("id");
+            if (StringUtils.equals("true", String.valueOf(reqMap.get("is_default"))) || StringUtils.equals("1", String.valueOf(reqMap.get("is_default")))){
+                addressService.clearDefaultAddress(reqMap.get("userId"));
+            }
             if (id != null){
                 ret = addressService.updateAddress(reqMap);
                 if (ret != null && ret > 0){

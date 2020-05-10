@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -74,7 +75,7 @@ public class OrderController {
             return returnUtil.returnResult(errno,"获取所有订单page不能为空！",new HashMap<>());
         }
         page = ( page - 1 ) * size;
-        Map<String,Object> ret;
+        List<Map<String, Object>> ret;
         try {
             logger.info("获取用户所有订单参数。 userId ：" + userId + " , showType : " + showType + ", size : " + size + ", page : " + page);
             ret = orderService.getAllOrder(userId,showType,size,page);

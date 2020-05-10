@@ -45,6 +45,11 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
+    public Integer clearDefaultAddress(Object userId) {
+        return addressMapper.clearDefaultAddress(userId);
+    }
+
+    @Override
     public Map<String, Object> getDefaultAddress(Object userId) {
         return addressMapper.getDefaultAddress(userId);
     }
