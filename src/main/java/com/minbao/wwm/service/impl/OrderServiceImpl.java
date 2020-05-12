@@ -1,12 +1,14 @@
 package com.minbao.wwm.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.minbao.wwm.dao.mapper.AddressMapper;
 import com.minbao.wwm.dao.mapper.OrderMapper;
 import com.minbao.wwm.service.CartService;
 import com.minbao.wwm.service.OrderService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.text.DateFormat;
@@ -15,6 +17,8 @@ import java.util.*;
 
 @Service
 public class OrderServiceImpl implements OrderService {
+
+    private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
 
     @Resource
     OrderMapper orderMapper;
@@ -91,6 +95,7 @@ public class OrderServiceImpl implements OrderService {
         Map<String,Object> reqMap = new HashMap<>();
         Map<String,Object> ret = new HashMap<>();
         Integer result;
+        Object orderId = 0;
         reqMap = cartService.checkout(addressId,null,null,null,userId);
         String orderNo = "ON" + dateFormat.format(new Date()) + s1 + s2;
         if (reqMap.get("checkedAddress") != null){
@@ -102,8 +107,14 @@ public class OrderServiceImpl implements OrderService {
         reqMap.put("actualPrice",actualPrice);
         reqMap.put("offlinePay",offlinePay);
         addGoodsMapList = (List<Map<String, Object>>) reqMap.get("checkedGoodsList");
+        if (addGoodsMapList == null){
+            return null;
+        }
+        logger.info("add订单请求参数：" + JSON.toJSONString(reqMap));
         result = orderMapper.addOrder(reqMap);
+        logger.info("add订单返回结果：" + result);
         if (result != null && result > 0 && addGoodsMapList.size() > 0){
+            orderId = reqMap.get("id");
             for (Map<String,Object> m:addGoodsMapList) {
                 m.put("orderId",reqMap.get("id"));
                 m.put("userId",userId);
@@ -112,7 +123,12 @@ public class OrderServiceImpl implements OrderService {
         }
         //更新购物车商品提交订单后状态
         cartService.updateCartGoodsStatus(userId);
-        return null;
+        ret = orderMapper.orderDetail(orderId,userId);
+        Map<String,Object> retMap = new HashMap<>();
+        if (ret != null){
+            retMap.put("orderInfo",reqMap);
+        }
+        return retMap;
     }
 
     @Override

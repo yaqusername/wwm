@@ -19,7 +19,7 @@ public interface CartService {
 
     Integer deleteCartGoods(Object userId,Object productIds);
 
-    Integer isChecked(Object userId,Object productIds,Object isChecked);
+    Integer isChecked(Object userId,List productIdList,Object isChecked);
 
     Map<String,Object> checkout(Object addressId,Object addType,Object orderFrom,Object type,Object userId);
 

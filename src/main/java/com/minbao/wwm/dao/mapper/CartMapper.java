@@ -28,7 +28,7 @@ public interface CartMapper {
 
     Integer deleteCartGoods(Object userId,Object productIds);
 
-    Integer isChecked(Object userId,Object productIds,Object isChecked);
+    Integer isChecked(Object userId,List productIdList,Object isChecked);
 
     List<Map<String,Object>> getCartProductList(Object userId);
 

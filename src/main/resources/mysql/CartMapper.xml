@@ -60,7 +60,11 @@
 
 	<!-- 选择或取消选择商品 -->
 	<update id="isChecked" parameterType="Object">
-		update m_cart set checked = #{isChecked} where  user_id = #{userId} and product_id = #{productIds} and is_delete != 1;
+		update m_cart set checked = #{isChecked} where  user_id = #{userId} and product_id in
+		<foreach item="item" index="index" collection="productIdList" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	 	and is_delete != 1;
 	</update>
 
 	<!-- 加入订单前获取购物车商品列表 -->

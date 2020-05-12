@@ -26,4 +26,6 @@ public interface OrderMapper {
     List<Map<String,Object>> getOrderGoods(Object userId,Object orderId);
 
     Map<String,Object> orderCount(String userId, String showType, Integer size, Integer page);
+
+    Map<String,Object> getOrderInfo(Object orderId);
 }

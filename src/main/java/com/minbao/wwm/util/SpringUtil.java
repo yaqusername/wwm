@@ -684,7 +684,7 @@ public class SpringUtil {
      * StringUtils.splitByWholeSeparator("ab-!-cd-!-ef", "-!-") = ["ab", "cd", "ef"]
      * </pre>
      *
-     * @param str  the String to parse, may be null
+     * @param toSplit  the String to parse, may be null
      * @param separator  String containing the String to be used as a delimiter,
      *  <code>null</code> splits on whitespace
      * @return an array of parsed Strings, <code>null</code> if null String was input

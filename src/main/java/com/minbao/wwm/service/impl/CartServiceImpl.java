@@ -101,8 +101,8 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public Integer isChecked(Object userId, Object productIds, Object isChecked) {
-        return cartMapper.isChecked(userId,productIds,isChecked);
+    public Integer isChecked(Object userId, List productIdList, Object isChecked) {
+        return cartMapper.isChecked(userId,productIdList,isChecked);
     }
 
     @Override

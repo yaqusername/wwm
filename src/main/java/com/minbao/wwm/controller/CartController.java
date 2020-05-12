@@ -11,10 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/cart")
@@ -248,7 +245,8 @@ public class CartController {
         }
         try {
             logger.info("选择或取消选择商品请求数据 request ：" + JSON.toJSONString(reqMap));
-            Integer ret = cartService.isChecked(userId,productIds,isChecked);
+            List productIdList = Arrays.asList(productIds.toString().split(","));
+            Integer ret = cartService.isChecked(userId,productIdList,isChecked);
             if (ret != null && ret > 0){
                 data = cartService.getCartDetail(userId);
                 if (data != null){

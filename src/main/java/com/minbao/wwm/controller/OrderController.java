@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -102,8 +101,8 @@ public class OrderController {
         Object offlinePay = reqMap.get("offlinePay");
         Object userId = reqMap.get("userId");
         int errno = -1;
-        String errmsg;
-        if (StringUtils.isBlank(userId.toString())){
+        String errmsg = "提交订单失败！";
+        if (StringUtils.isBlank(String.valueOf(userId))){
             logger.error("获取订单数量用户ID不能为空");
             return returnUtil.returnResult(errno,"用户ID不能为空！",new HashMap<>());
         }
@@ -111,9 +110,13 @@ public class OrderController {
         try {
             logger.info("提交订单请求参数。 userId ：" + userId);
             ret = orderService.submit(userId,addressId,postscript,freightPrice,actualPrice,offlinePay);
-            errno = 0;
-            errmsg = "提交订单成功！";
-            return returnUtil.returnResult(errno,errmsg,ret);
+            if (ret != null){
+                errno = 0;
+                errmsg = "提交订单成功！";
+                return returnUtil.returnResult(errno,errmsg,ret);
+            }else{
+                errmsg = "订单已提交！";
+            }
         }catch (Exception e){
             logger.error("提交订单异常！msg：" + e.getMessage(),e);
             errmsg = "提交订单异常";
