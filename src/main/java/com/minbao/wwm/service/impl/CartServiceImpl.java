@@ -132,11 +132,15 @@ public class CartServiceImpl implements CartService {
         //获取购物车商品列表
         List<Map<String,Object>> cartProductList = cartMapper.getCartProductList(userId);
         Integer goodsCount = 0;
+        StringBuilder printInfo = new StringBuilder();
         BigDecimal goodsTotalPrice = new BigDecimal(0.00);
+        int flag = 0;
         if (cartProductList != null && cartProductList.size() > 0){
             for (Map<String,Object> m:cartProductList) {
+                flag++;
                 Double weight_count = Double.valueOf(String.valueOf(m.get("goods_weight"))) * Integer.valueOf(String.valueOf(m.get("number")));
                 m.put("weight_count",weight_count);
+                printInfo.append(flag).append("、").append(m.get("goods_name")).append("【").append(m.get("number")).append("】 ");
                 Integer num = Integer.valueOf(String.valueOf(m.get("number")));
                 goodsCount = goodsCount + num;
                 BigDecimal tempPrice = BigDecimal.valueOf(Double.valueOf(String.valueOf(m.get("retail_price")))*num);
@@ -148,6 +152,7 @@ public class CartServiceImpl implements CartService {
         result.put("orderTotalPrice",goodsTotalPrice);
         result.put("actualPrice",goodsTotalPrice);
         result.put("goodsCount",goodsCount);
+        result.put("print_info",printInfo.toString());
         result.put("outStock",0);
         result.put("numberChange",0);
         return result;

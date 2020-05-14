@@ -79,9 +79,21 @@ public class OrderController {
             logger.info("获取用户所有订单参数。 userId ：" + userId + " , showType : " + showType + ", size : " + size + ", page : " + page);
             ret = orderService.getAllOrder(userId,showType,size,page);
             if (ret != null){
+                Map<String,Object> result = new HashMap<>();
+                Map<String,Object> orderCount = orderService.orderTotal(userId,showType);
+                int count = 0;
+                if (orderCount != null && orderCount.size() > 0){
+                    count = Integer.valueOf(String.valueOf(orderCount.get("count")));  //总数量
+                }
+                Integer totalPages = (count + size - 1) / size;  //总页数
+                result.put("count",count);
+                result.put("totalPages",totalPages);
+                result.put("pageSize",size);
+                result.put("currentPage",page + 1);
+                result.put("data",ret);
                 errno = 0;
                 errmsg = "获取用户所有订单成功！";
-                return returnUtil.returnResult(errno,errmsg,ret);
+                return returnUtil.returnResult(errno,errmsg,result);
             }
         }catch (Exception e){
             logger.error("获取用户所有订单异常！msg：" + e.getMessage(),e);
