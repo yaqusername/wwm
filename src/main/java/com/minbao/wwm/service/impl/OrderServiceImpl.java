@@ -5,6 +5,7 @@ import com.minbao.wwm.dao.mapper.AddressMapper;
 import com.minbao.wwm.dao.mapper.OrderMapper;
 import com.minbao.wwm.service.CartService;
 import com.minbao.wwm.service.OrderService;
+import com.minbao.wwm.util.DateUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -211,8 +212,11 @@ public class OrderServiceImpl implements OrderService {
         if ("401".equals(orderStatus.toString())){
             orderDetail.put("order_status_text","已完成");
         }
-
-        orderDetail.put("final_pay_time","2020-08-08 08:08:00");
+        String final_pay_time = String.valueOf(orderDetail.get("final_pay_time"));
+        if (StringUtils.isNotBlank(final_pay_time)){
+            long timeStemp= DateUtils.timeToStamp(final_pay_time);
+            orderDetail.put("final_pay_time",timeStemp / 1000);
+        }
         result.put("orderInfo",orderDetail);
 
         int tempOrderStatus = Integer.valueOf(String.valueOf(orderDetail.get("order_status")));

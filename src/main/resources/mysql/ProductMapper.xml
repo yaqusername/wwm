@@ -5,7 +5,7 @@
 	<!--新增产品-->
 	<insert id="count1" parameterType="Map">
 		INSERT m_product(product_name,product_image,product_status,product_show,expiration_date,saving_mode,description,create_date,update_date,new_price,price,start_time,end_time)
- 		VALUES(#{productName},#{productImage},1,1,#{expirationDate},#{savingMode},#{description},SYSDATE(),SYSDATE(),#{newPrice},#{price},#{startTime},#{endTime});
+ 		VALUES(#{productName},#{productImage},1,1,#{expirationDate},#{savingMode},#{description},unix_timestamp(now()),unix_timestamp(now()),#{newPrice},#{price},#{startTime},#{endTime});
 	</insert>
 
 	<!--  获取分类页面产品数量 -->

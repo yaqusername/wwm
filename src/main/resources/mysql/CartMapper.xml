@@ -30,7 +30,7 @@
 	<!-- 添加购物车 -->
 	<insert id="addCart" parameterType="Map">
 		INSERT INTO m_cart (`user_id`,`goods_id`,`goods_sn`,`product_id`,`goods_name`,`goods_aka`,`goods_weight`,`add_price`,`retail_price`,`number`,`goods_specifition_name_value`,`goods_specifition_ids`,`checked`,`list_pic_url`,`freight_template_id`,`add_time`)
-		values (#{userId},#{goodsId},#{goods_sn},#{productId},#{goods_name},#{goods_aka},#{goods_weight},#{retail_price},#{retail_price},#{number},#{goods_specifition_name_value},#{goods_specifition_ids},1,#{list_pic_url},#{freight_template_id},SYSDATE());
+		values (#{userId},#{goodsId},#{goods_sn},#{productId},#{goods_name},#{goods_aka},#{goods_weight},#{retail_price},#{retail_price},#{number},#{goods_specifition_name_value},#{goods_specifition_ids},1,#{list_pic_url},#{freight_template_id},unix_timestamp(now()));
 	</insert>
 
 	<!-- 获取购物车产品详情 -->

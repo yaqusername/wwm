@@ -103,8 +103,20 @@ public class DateUtils {
 		String date = new SimpleDateFormat(format).format(new Date(longTime));
 		return date;
 	}
-	
-	
+
+    //日期转换为时间戳 (精确到毫秒)
+    public static long timeToStamp(String timers) {
+        Date d = new Date();
+        long timeStemp = 0;
+        try {
+            SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            d = sf.parse(timers);// 日期转换为时间戳
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        timeStemp = d.getTime();
+        return timeStemp;
+    }
     
 }
 

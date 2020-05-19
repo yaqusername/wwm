@@ -8,7 +8,7 @@
 			select LAST_INSERT_ID()
 		</selectKey>
 		INSERT m_user(uid,sessionkey,create_time,nickname,gender,avatar,country,province,city)
- 		VALUES(#{openid},#{sessionkey},SYSDATE(),#{nickname},#{gender},#{avatarUrl},#{country},#{province},#{city});
+ 		VALUES(#{openid},#{sessionkey},unix_timestamp(now()),#{nickname},#{gender},#{avatarUrl},#{country},#{province},#{city});
 	</insert>
 
 	<!--查询用户-->

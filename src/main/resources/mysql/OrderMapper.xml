@@ -29,7 +29,7 @@
 
 	<!-- 根据订单状态获取所有订单 -->
 	<select id="getAllOrder" resultType="Map" parameterType="Object">
-		SELECT `id`,`add_time`,`actual_price`,`freight_price`,`offline_pay`,`order_status` FROM `m_order` WHERE ( `user_id` = #{userId} ) AND ( `is_delete` = 0 ) AND ( 7 >  `order_type` )
+		SELECT `id`,DATE_ADD(FROM_UNIXTIME(add_time, '%Y-%m-%d %H:%i:%S'),INTERVAL 8 HOUR) as add_time,`actual_price`,`freight_price`,`offline_pay`,`order_status` FROM `m_order` WHERE ( `user_id` = #{userId} ) AND ( `is_delete` = 0 ) AND ( 7 >  `order_type` )
 		<if test=" showType == 0 "> AND order_status IN (101,102,103,201,202,203,300,301,302,303,401) </if>
 		 <if test=" showType == 1 "> AND order_status IN (101,801) </if>
 		 <if test=" showType == 2 "> AND order_status = 300 </if>
@@ -43,7 +43,7 @@
 			select LAST_INSERT_ID()
 		</selectKey>
 		INSERT INTO `m_order` (`order_sn`,`user_id`,`order_status`,`offline_pay`,`consignee`,`province`,`city`,`district`,`address`,`print_info`,`mobile`,`postscript`,`change_price`,`actual_price`,`order_price`,`goods_price`,`add_time`,`freight_price`,order_type,is_delete,express_value)
-		VALUES (#{orderNo},#{user_id},101,#{offlinePay},#{name},#{province_id},#{city_id},#{area_id},#{address},#{print_info},#{mobile},#{mark},0,#{actualPrice},#{orderTotalPrice},#{goodsTotalPrice},SYSDATE(),#{freightPrice},0,0,0);
+		VALUES (#{orderNo},#{user_id},101,#{offlinePay},#{name},#{province_id},#{city_id},#{area_id},#{address},#{print_info},#{mobile},#{mark},0,#{actualPrice},#{orderTotalPrice},#{goodsTotalPrice},unix_timestamp(now()),#{freightPrice},0,0,0);
 	</insert>
 
 	<!-- 添加订单 -->
@@ -64,7 +64,9 @@
 
 	<!-- 获取订单详情 -->
 	<select id="orderDetail" parameterType="Object" resultType="Map">
-		select * from m_order where id = #{orderId} and user_id = #{userId} limit 1;
+		select id,order_sn,user_id,order_status,offline_pay,shipping_status,print_status,pay_status,consignee,country,province,city,district,address,print_info,mobile,postscript,
+		 	admin_memo,shipping_fee,pay_name,pay_id,change_price,actual_price,order_price,goods_price,DATE_ADD(FROM_UNIXTIME(add_time, '%Y-%m-%d %H:%i:%S'),INTERVAL 8 HOUR) as add_time,DATE_ADD(FROM_UNIXTIME(add_time, '%Y-%m-%d %H:%i:%S'),INTERVAL 32 HOUR) as final_pay_time,pay_time,shipping_time,confirm_time,dealdone_time,freight_price,express_value,
+		  	remark,order_type,is_delete from m_order where id = #{orderId} and user_id = #{userId} limit 1;
 	</select>
 
 	<!-- 查询订单商品 -->

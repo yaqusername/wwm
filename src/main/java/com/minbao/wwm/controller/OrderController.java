@@ -197,6 +197,10 @@ public class OrderController {
             logger.error("订单ID不能为空");
             return returnUtil.returnResult(errno,"订单ID不能为空！",new HashMap<>());
         }
+        if (userId == null){
+            logger.error("userID不能为空");
+            return returnUtil.returnResult(errno,"userID不能为空！",new HashMap<>());
+        }
         Map<String,Object> ret;
         try {
             logger.info("获取订单详情请求参数。 oederId ：" + orderId);
