@@ -31,8 +31,8 @@ public class CartController {
 
     /**
      * 获取购物车商品数量
-     * @param userId
-     * @return
+     * @param userId 用户Id
+     * @return  list
      */
     @RequestMapping("/goodsCount")
     public Map goodsCount(String userId){
@@ -65,8 +65,8 @@ public class CartController {
 
     /**
      * 添加购物车
-     * @param reqMap
-     * @return
+     * @param reqMap 请求参数
+     * @return Map
      */
     @RequestMapping("/addCart")
     public Map addCart(@RequestBody Map<String,Object> reqMap){
@@ -121,8 +121,8 @@ public class CartController {
 
     /**
      * 更新购物车
-     * @param reqMap
-     * @return
+     * @param reqMap 请求参数
+     * @return Map
      */
     @RequestMapping("/updateCart")
     public Map updateCart(@RequestBody Map<String,Object> reqMap){
@@ -164,8 +164,8 @@ public class CartController {
 
     /**
      * 购物车首页信息
-     * @param userId
-     * @return
+     * @param userId 用户Id
+     * @return Map
      */
     @RequestMapping("/getCartDetail")
     public Map getCartDetail(String userId){
@@ -191,8 +191,8 @@ public class CartController {
 
     /**
      * 购物车删除产品
-     * @param reqMap
-     * @return
+     * @param reqMap 请求参数
+     * @return map
      */
     @RequestMapping("/deleteCartGoods")
     public Map deleteCartGoods(@RequestBody Map<String,Object> reqMap){
@@ -227,8 +227,8 @@ public class CartController {
 
     /**
      * 选择或取消选择商品
-     * @param reqMap
-     * @return
+     * @param reqMap 请求参数
+     * @return map
      */
     @RequestMapping("/isChecked")
     public Map isChecked(@RequestBody Map<String,Object> reqMap){
@@ -269,7 +269,7 @@ public class CartController {
     /**
      * 下单前信息确认
      * @param addressId addType orderFrom type
-     * @return
+     * @return Map
      */
     @RequestMapping("/checkout")
     public Map checkout(Integer addressId,String addType,String orderFrom,String type,String userId){
@@ -311,8 +311,8 @@ public class CartController {
 
     /**
      * 下单前信息确认（商品列表）
-     * @param userId
-     * @return
+     * @param userId 用户Id
+     * @return Map
      */
     @RequestMapping("/getCartProductList")
     public Map getCartProductList(Integer userId,Integer orderId){
