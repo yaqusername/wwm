@@ -5,6 +5,7 @@ import com.minbao.wwm.common.ErrorCMD;
 import com.minbao.wwm.common.ReturnUtil;
 import com.minbao.wwm.dto.RequestJson;
 import com.minbao.wwm.dto.ResponseJson;
+import com.minbao.wwm.service.MainService;
 import com.minbao.wwm.service.ProductService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -25,6 +26,9 @@ public class ProductController {
     private static Logger logger = LoggerFactory.getLogger(ProductController.class);
     @Autowired
     ProductService productService;
+
+    @Autowired
+    MainService mainService;
 
     @Autowired
     ReturnUtil returnUtil;
@@ -129,7 +133,7 @@ public class ProductController {
     }
 
     @RequestMapping("/searchList")
-    public Map<String,Object> searchList(String keyword,String sort,String order,String sales){
+    public Map<String,Object> searchList(String keyword,String sort,String order,String sales,String userId){
         int errno = -1;
         String errmsg = "搜索商品失败！";
         if (StringUtils.isBlank(keyword)){
@@ -149,6 +153,10 @@ public class ProductController {
             ret = productService.searchList(keyword,sort,order,sales);
             if (ret != null){
                 errmsg = "搜索商品成功！";
+                //删除重复的搜索记录
+                mainService.deleteSearchHistory(keyword,userId);
+                //搜索成功后添加搜索记录
+                mainService.addSearchHistory(keyword,userId);
                 return returnUtil.returnResult(0,errmsg,ret);
             }
         }catch (Exception e){

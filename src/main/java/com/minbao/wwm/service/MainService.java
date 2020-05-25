@@ -16,4 +16,8 @@ public interface MainService {
     Map<String,Object> searchIndex(Object userId);
 
     List<String> searchHelper(Object keyword);
+
+    Integer addSearchHistory(Object keyword,Object userId);
+
+    Integer deleteSearchHistory(Object keyword,Object userId);
 }

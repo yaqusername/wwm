@@ -23,4 +23,8 @@ public interface MainMapper {
     List<Map<String,Object>> hotSearch(Object userId);
 
     List<String> searchHelper(Object keyword);
+
+    Integer addSearchHistory(Object keyword,Object userId);
+
+    Integer deleteSearchHistory(Object keyword,Object userId);
 }

@@ -41,4 +41,14 @@
 	<select id="searchHelper" parameterType="Object" resultType="String">
 		SELECT DISTINCT keyword FROM m_keywords WHERE keyword LIKE <![CDATA[CONCAT(#{keyword},'%')]]> LIMIT 10;
 	</select>
+
+	<!-- 搜索成功后添加搜索记录 -->
+	<insert id="addSearchHistory" parameterType="Object">
+		insert into m_search_history(`keyword`,`add_time`,`user_id`) VALUES (#{keyword},unix_timestamp(now()),#{userId})
+	</insert>
+
+	<!-- 删除重复搜索记录 -->
+	<delete id="deleteSearchHistory" parameterType="Object">
+		delete from m_search_history where `keyword` = #{keyword} and `user_id` = #{userId};
+	</delete>
 </mapper>

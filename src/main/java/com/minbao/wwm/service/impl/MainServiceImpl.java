@@ -62,4 +62,14 @@ public class MainServiceImpl implements MainService {
     public List<String> searchHelper(Object keyword) {
         return mainMapper.searchHelper(keyword);
     }
+
+    @Override
+    public Integer addSearchHistory(Object keyword, Object userId) {
+        return mainMapper.addSearchHistory(keyword,userId);
+    }
+
+    @Override
+    public Integer deleteSearchHistory(Object keyword, Object userId) {
+        return mainMapper.deleteSearchHistory(keyword,userId);
+    }
 }
