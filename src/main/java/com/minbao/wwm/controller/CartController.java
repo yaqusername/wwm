@@ -3,7 +3,7 @@ package com.minbao.wwm.controller;
 import com.alibaba.fastjson.JSON;
 import com.minbao.wwm.common.ReturnUtil;
 import com.minbao.wwm.service.CartService;
-import com.minbao.wwm.util.DateUtils;
+import com.minbao.wwm.service.OrderService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RestController
@@ -24,6 +22,9 @@ public class CartController {
 
     @Autowired
     CartService cartService;
+
+    @Autowired
+    OrderService orderService;
 
     @Autowired
     ReturnUtil returnUtil;
@@ -284,14 +285,14 @@ public class CartController {
         if (addType == null || StringUtils.equals("",addType)){
             return returnUtil.returnResult(errno,"addType不能为空！",new HashMap());
         }
-        if (orderFrom == null || StringUtils.equals("",orderFrom)){
-            return returnUtil.returnResult(errno,"orderFrom不能为空！",new HashMap());
-        }
         if (type == null || StringUtils.equals("",type)){
             return returnUtil.returnResult(errno,"type不能为空！",new HashMap());
         }
         if (userId == null){
             return returnUtil.returnResult(errno,"userId不能为空！",new HashMap());
+        }
+        if (StringUtils.equals("2",addType) && (StringUtils.equals("undefined",orderFrom) || StringUtils.isBlank(orderFrom))){
+            return returnUtil.returnResult(errno,"orderId不能为空！",new HashMap());
         }
         try {
             logger.info("加入订单前检验请求数据 request ：" );
@@ -309,29 +310,38 @@ public class CartController {
     }
 
     /**
-     * 下单前信息确认
+     * 下单前信息确认（商品列表）
      * @param userId
      * @return
      */
     @RequestMapping("/getCartProductList")
-    public Map getCartProductList(Integer userId){
+    public Map getCartProductList(Integer userId,Integer orderId){
         int errno = -1;
         String errmsg = "获取购物车选中商品失败！";
         List<Map<String,Object>> data = new ArrayList<>();
         if (userId == null || userId == 0){
             return returnUtil.returnResult(errno,"userId不能为空！",new HashMap());
         }
+        if (orderId == null){
+            return returnUtil.returnResult(errno,"orderId不能为空！",new HashMap());
+        }
         try {
             logger.info("获取购物车选中商品请求数据 userId ：" + userId);
-            data = cartService.getCartProductList(userId);
+            if (orderId == 0){
+                //购物车商品列表
+                data = cartService.getCartProductList(userId);
+            }else {
+                //订单商品列表
+                data = orderService.getOrderGoodsList(userId,orderId);
+            }
             if (data != null){
                 errno = 0;
-                errmsg = "获取购物车选中商品成功！";
+                errmsg = "获取购物车选中商品或者订单商品成功！";
                 return returnUtil.returnResult(errno,errmsg,data);
             }
         }catch (Exception e){
-            logger.error("获取购物车选中商品异常！msg:" + e.getMessage(),e);
-            errmsg = "获取购物车选中商品异常！";
+            logger.error("获取商品列表异常！msg:" + e.getMessage(),e);
+            errmsg = "获取商品列表异常！";
         }
         return returnUtil.returnResult(errno,errmsg,data);
     }

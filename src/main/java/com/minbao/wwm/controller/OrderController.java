@@ -112,6 +112,7 @@ public class OrderController {
         Object actualPrice = reqMap.get("actualPrice");
         Object offlinePay = reqMap.get("offlinePay");
         Object userId = reqMap.get("userId");
+        Object data = reqMap.get("data");
         int errno = -1;
         String errmsg = "提交订单失败！";
         if (StringUtils.isBlank(String.valueOf(userId))){
@@ -121,7 +122,7 @@ public class OrderController {
         Map<String,Object> ret;
         try {
             logger.info("提交订单请求参数。 userId ：" + userId);
-            ret = orderService.submit(userId,addressId,postscript,freightPrice,actualPrice,offlinePay);
+            ret = orderService.submit(userId,addressId,postscript,freightPrice,actualPrice,offlinePay,data);
             if (ret != null){
                 errno = 0;
                 errmsg = "提交订单成功！";

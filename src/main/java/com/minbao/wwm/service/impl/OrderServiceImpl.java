@@ -1,6 +1,7 @@
 package com.minbao.wwm.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.minbao.wwm.dao.mapper.AddressMapper;
 import com.minbao.wwm.dao.mapper.OrderMapper;
 import com.minbao.wwm.service.CartService;
@@ -94,26 +95,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Map<String, Object> submit(Object userId, Object addressId, Object postscript, Object freightPrice, Object actualPrice, Object offlinePay) {
-
-        DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-        double d1 = Math.random();
-        double d2 = Math.random();
-        String s1 = (int)(d1*100)+"";
-        if (s1.length() == 3 || s1.length() == 1){
-            s1 = "88";
-        }
-        String s2 = (int)(d2*10)+"";
-        if (s2.length() == 2){
-            s2 = "6";
-        }
+    public Map<String, Object> submit(Object userId, Object addressId, Object postscript, Object freightPrice, Object actualPrice, Object offlinePay,Object data) {
         List<Map<String,Object>> addGoodsMapList;
         Map<String,Object> reqMap = new HashMap<>();
         Map<String,Object> ret = new HashMap<>();
         Integer result;
         Object orderId = 0;
-        reqMap = cartService.checkout(addressId,null,null,null,userId);
-        String orderNo = "ON" + dateFormat.format(new Date()) + s1 + s2;
+        reqMap = JSONObject.parseObject(JSON.toJSONString(data));
+        String orderNo = getOrderNo();
         if (reqMap.get("checkedAddress") != null){
             reqMap.putAll((Map)reqMap.get("checkedAddress"));
         }
@@ -237,6 +226,11 @@ public class OrderServiceImpl implements OrderService {
         return result;
     }
 
+    @Override
+    public List<Map<String, Object>> getOrderGoodsList(Object userId, Object orderId) {
+        return orderMapper.getOrderGoodsList(userId,orderId);
+    }
+
     /**
      * 组装操作信息学
      * @param tempOrderStatus 订单状态
@@ -356,5 +350,21 @@ public class OrderServiceImpl implements OrderService {
             textCode.put("success",true);
         }
         return textCode;
+    }
+
+    //生成orderId
+    public String getOrderNo(){
+        DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+        double d1 = Math.random();
+        double d2 = Math.random();
+        String s1 = (int)(d1*100)+"";
+        if (s1.length() == 3 || s1.length() == 1){
+            s1 = "88";
+        }
+        String s2 = (int)(d2*10)+"";
+        if (s2.length() == 2){
+            s2 = "6";
+        }
+        return "ON" + dateFormat.format(new Date()) + s1 + s2;
     }
 }

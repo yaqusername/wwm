@@ -81,4 +81,15 @@
 	<update id="updateCartGoodsStatus" parameterType="Object">
 		 update m_cart set is_delete = 1 where id in (select * from (select id from m_cart where user_id = #{userId} and is_delete != 1 and is_on_sale = 1 and checked = 1) t);
 	</update>
+
+	<select id="">
+		insert into m_order(id, order_sn,user_id,order_status,offline_pay,shipping_status,print_status,pay_status,
+		consignee,country,province,city,district,address,print_info,mobile,postscript,admin_memo,shipping_fee,
+		pay_name,pay_id,change_price,actual_price,order_price,goods_price,add_time,shipping_time,confirm_time,
+		dealdone_time, freight_price,express_value,remark,order_type) select id + 1 order_sn,user_id,order_status,
+		offline_pay,shipping_status,print_status,pay_status,consignee,country,province,city,district,address,
+		print_info,mobile,postscript,admin_memo,shipping_fee,pay_name,pay_id,change_price,actual_price,
+		order_price,goods_price,add_time,0 as shipping_time, 0 as confirm_time,0 as dealdone_time, freight_price,
+		express_value,remark,order_type from m_order where id= 1373
+	</select>
 </mapper>

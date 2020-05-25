@@ -69,8 +69,13 @@
 		  	remark,order_type,is_delete from m_order where id = #{orderId} and user_id = #{userId} limit 1;
 	</select>
 
-	<!-- 查询订单商品 -->
+	<!-- 查询订单商品列表 -->
 	<select id="getOrderGoods" parameterType="Object" resultType="Map">
 		SELECT *  FROM `m_order_goods` WHERE ( `user_id` = #{userId} ) AND ( `order_id` = #{orderId} ) AND ( `is_delete` != 1 );
+	</select>
+
+	<!-- 获取订单商品列表-再来一单 -->
+	<select id="getOrderGoodsList" parameterType="Object" resultType="Map">
+		SELECT `id`,`order_id`,`order_id` as orderId,`goods_id`,`goods_name`,`goods_aka`,`product_id`,`number`,`retail_price`,`goods_specifition_name_value`,`goods_specifition_ids`,`list_pic_url`,`user_id`,is_delete from m_order_goods where order_id = #{orderId}
 	</select>
 </mapper>

@@ -6,7 +6,6 @@ import com.minbao.wwm.common.ReturnUtil;
 import com.minbao.wwm.dto.RequestJson;
 import com.minbao.wwm.dto.ResponseJson;
 import com.minbao.wwm.service.ProductService;
-import com.sun.org.apache.xerces.internal.xs.datatypes.ObjectList;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

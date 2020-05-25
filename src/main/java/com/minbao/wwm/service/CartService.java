@@ -23,7 +23,7 @@ public interface CartService {
 
     Map<String,Object> checkout(Object addressId,Object addType,Object orderFrom,Object type,Object userId);
 
-    List<Map<String,Object>> getCartProductList(Object userId);
+    List<Map<String,Object>> getCartProductList(Object orderId);
 
     Integer updateCartGoodsStatus(Object userId);
 }

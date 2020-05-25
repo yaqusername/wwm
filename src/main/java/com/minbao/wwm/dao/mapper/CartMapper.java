@@ -30,7 +30,7 @@ public interface CartMapper {
 
     Integer isChecked(Object userId,List productIdList,Object isChecked);
 
-    List<Map<String,Object>> getCartProductList(Object userId);
+    List<Map<String,Object>> getCartProductList(Object orderId);
 
     Integer updateCartGoodsStatus(Object userId);
 }

@@ -1,6 +1,7 @@
 package com.minbao.wwm.service.impl;
 
 import com.minbao.wwm.dao.mapper.CartMapper;
+import com.minbao.wwm.dao.mapper.OrderMapper;
 import com.minbao.wwm.service.AddressService;
 import com.minbao.wwm.service.CartService;
 import org.apache.commons.lang.StringUtils;
@@ -21,6 +22,12 @@ public class CartServiceImpl implements CartService {
     @Resource
     AddressService addressService;
 
+    @Resource
+    OrderMapper orderMapper;
+
+    @Resource
+    OrderServiceImpl orderService;
+
     @Override
     public Map<String, Object> goodsCount(Integer userId) {
         return cartMapper.goodsCount(userId);
@@ -28,21 +35,10 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public Integer addCart(Object addType, Object productId, Object goodsId, Object number,Object userId) {
-
-        Map<String,Object> reqMap = new HashMap<>();
-        Map<String,Object> cartGetGoods = cartMapper.addCartGetGoods(goodsId);
-        Map<String,Object> cartGetProduct = cartMapper.addCartGetProduct(productId);
-        Map<String,Object> cartGetGoodsSpecification = cartMapper.addCartGetGoodsSpecification(goodsId);
-        if (cartGetGoods == null || cartGetGoodsSpecification == null || cartGetProduct == null){
+        Map<String,Object> reqMap = getAddCartInfo(productId,goodsId,number,userId);
+        if (reqMap == null){
             return -1;
         }
-        reqMap.putAll(cartGetProduct);
-        reqMap.putAll(cartGetGoodsSpecification);
-        reqMap.putAll(cartGetGoods);
-        reqMap.put("number",number);
-        reqMap.put("userId",userId);
-        reqMap.put("goodsId",goodsId);
-        reqMap.put("productId",productId);
         return cartMapper.addCart(reqMap);
     }
 
@@ -128,39 +124,65 @@ public class CartServiceImpl implements CartService {
                 result.put("checkedAddress",address);
             }
         }
-
-        //获取购物车商品列表
-        List<Map<String,Object>> cartProductList = cartMapper.getCartProductList(userId);
         Integer goodsCount = 0;
-        StringBuilder printInfo = new StringBuilder();
-        BigDecimal goodsTotalPrice = new BigDecimal(0.00);
-        int flag = 0;
-        if (cartProductList != null && cartProductList.size() > 0){
-            for (Map<String,Object> m:cartProductList) {
-                flag++;
-                Double weight_count = Double.valueOf(String.valueOf(m.get("goods_weight"))) * Integer.valueOf(String.valueOf(m.get("number")));
-                m.put("weight_count",weight_count);
-                printInfo.append(flag).append("、").append(m.get("goods_name")).append("【").append(m.get("number")).append("】 ");
-                Integer num = Integer.valueOf(String.valueOf(m.get("number")));
-                goodsCount = goodsCount + num;
-                BigDecimal tempPrice = BigDecimal.valueOf(Double.valueOf(String.valueOf(m.get("retail_price")))*num);
-                goodsTotalPrice = goodsTotalPrice.add(tempPrice);
+        if (StringUtils.equals("2",String.valueOf(addType))){
+            //订单详情
+            Map<String,Object> retOrder = orderMapper.orderDetail(orderFrom,userId);
+            if (retOrder != null){
+                result.put("freightPrice",retOrder.get("freight_price"));
+                result.put("goodsTotalPrice",retOrder.get("goods_price"));
+                result.put("orderTotalPrice",retOrder.get("order_price"));
+                result.put("actualPrice",retOrder.get("actual_price"));
             }
-            result.put("checkedGoodsList",cartProductList);
+            //订单商品列表
+            List<Map<String,Object>> orderGoodsList = orderMapper.getOrderGoodsList(userId,orderFrom);
+            if (orderGoodsList.size() > 0){
+                for (Map<String,Object> map:orderGoodsList) {
+                    Integer num = Integer.valueOf(String.valueOf(map.get("number")));
+                    Object productId = map.get("product_id");
+                    Object goodsId = map.get("goods_id");
+                    goodsCount = goodsCount + num;
+                    Map<String,Object> addCartInfo = getAddCartInfo(productId, goodsId, num, userId);
+                    if (addCartInfo != null){
+                        map.putAll(addCartInfo);
+                    }
+                }
+                result.put("checkedGoodsList",orderGoodsList);
+            }
+
+        }else {
+            //获取购物车商品列表
+            List<Map<String,Object>> cartProductList = cartMapper.getCartProductList(userId);
+            StringBuilder printInfo = new StringBuilder();
+            BigDecimal goodsTotalPrice = new BigDecimal(0.00);
+            int flag = 0;
+            if (cartProductList != null && cartProductList.size() > 0){
+                for (Map<String,Object> m:cartProductList) {
+                    flag++;
+                    Double weight_count = Double.valueOf(String.valueOf(m.get("goods_weight"))) * Integer.valueOf(String.valueOf(m.get("number")));
+                    m.put("weight_count",weight_count);
+                    printInfo.append(flag).append("、").append(m.get("goods_name")).append("【").append(m.get("number")).append("】 ");
+                    Integer num = Integer.valueOf(String.valueOf(m.get("number")));
+                    goodsCount = goodsCount + num;
+                    BigDecimal tempPrice = BigDecimal.valueOf(Double.valueOf(String.valueOf(m.get("retail_price")))*num);
+                    goodsTotalPrice = goodsTotalPrice.add(tempPrice);
+                }
+                result.put("checkedGoodsList",cartProductList);
+            }
+            result.put("goodsTotalPrice",goodsTotalPrice);
+            result.put("orderTotalPrice",goodsTotalPrice);
+            result.put("actualPrice",goodsTotalPrice);
+            result.put("print_info",printInfo.toString());
         }
-        result.put("goodsTotalPrice",goodsTotalPrice);
-        result.put("orderTotalPrice",goodsTotalPrice);
-        result.put("actualPrice",goodsTotalPrice);
-        result.put("goodsCount",goodsCount);
-        result.put("print_info",printInfo.toString());
-        result.put("outStock",0);
         result.put("numberChange",0);
+        result.put("goodsCount",goodsCount);
+        result.put("outStock",0);
         return result;
     }
 
     @Override
-    public List<Map<String, Object>> getCartProductList(Object userId) {
-        return cartMapper.getCartProductList(userId);
+    public List<Map<String, Object>> getCartProductList(Object orderId) {
+        return cartMapper.getCartProductList(orderId);
     }
 
     @Override
@@ -185,5 +207,24 @@ public class CartServiceImpl implements CartService {
             full_region.append(address.get("district_name"));
         }
         return full_region;
+    }
+
+    //获取要添加购车商品信息
+    private Map<String,Object> getAddCartInfo(Object productId, Object goodsId, Object number,Object userId){
+        Map<String,Object> reqMap = new HashMap<>();
+        Map<String,Object> cartGetGoods = cartMapper.addCartGetGoods(goodsId);
+        Map<String,Object> cartGetProduct = cartMapper.addCartGetProduct(productId);
+        Map<String,Object> cartGetGoodsSpecification = cartMapper.addCartGetGoodsSpecification(goodsId);
+        if (cartGetGoods == null || cartGetGoodsSpecification == null || cartGetProduct == null){
+            return null;
+        }
+        reqMap.putAll(cartGetProduct);
+        reqMap.putAll(cartGetGoodsSpecification);
+        reqMap.putAll(cartGetGoods);
+        reqMap.put("number",number);
+        reqMap.put("userId",userId);
+        reqMap.put("goodsId",goodsId);
+        reqMap.put("productId",productId);
+        return reqMap;
     }
 }
