@@ -83,13 +83,13 @@ public class OrderServiceImpl implements OrderService {
                 }
                 int tempOrderStatus = Integer.valueOf(String.valueOf(map.get("order_status")));
                 Map<String,Object> handleOption = getHandleOption(tempOrderStatus);
-
-                String statusText = "待付款";
-
+                int orderStatus = Integer.valueOf(String.valueOf(map.get("order_status")));
+                String statusText = getStatusText(orderStatus);
                 map.put("goodsCount",tempCount);
                 map.put("order_status_text",statusText);
                 map.put("handleOption",handleOption);
             }
+
         }
         return orderList;
     }
